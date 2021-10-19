@@ -10,5 +10,7 @@
         "data5": "bool"
     },
     "Edge": null,
-    "Edgefeatures": {}
+    "Edgefeatures": {},
+    "nodelist":"nodes",
+    "neighbours":"neighbours"
 }
