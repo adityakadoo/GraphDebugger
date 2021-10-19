@@ -1,20 +1,79 @@
-from django.http.response import JsonResponse
+from django.http.response import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
-from .python_scripts import lines
-
+from django.views import View
+from .models import Graph
 # Create your views here.
+from django.utils.decorators import method_decorator
 
-@csrf_exempt
-def start_process(request):
-    # Will contain config info in JSON format
-    config = json.loads(request.body)
-    # print(config)
-    # Will contain binary-path in string format
-    # binary = request.GET['path']
-    # print(binary)
+@method_decorator(csrf_exempt, name='dispatch')
+class graphview(View):
+    def post(self,request):
+        received_json_data=json.loads(request.body.decode("utf-8"))
+        #fix the json format as here you need to access graph objects or i am giving this name and it will be used forever
+        temp_dataset,created=Graph.objects.get_or_create(name="trialgraph")
+        temp_dataset.data=received_json_data
+        temp_dataset.save()
+        print(received_json_data)
+        return HttpResponse('')
 
-    # command = ["gdb","-x","python_scripts/start.py"]
-    # Add code here to start and maintain a new GDB process with above command
+    def get(self,request):
+        available_dataset,created=Graph.objects.get_or_create(name="trialgraph")
+        c=available_dataset.config
+        g=available_dataset.data
+        temp_data=dict()
+        # # nodes_cnt=g[c['Graph']]
+        for e in g[c['Graph']]:
+            if e!='fields' and e['name']==c['graph'] :
+                starting_location=e
+        nodes_dict=dict()
+        # #nodes_dict['mem_loc']=id
+        Node_array=g[c['Graph']][starting_location]['value'][c['nodelist']]
+        cnt=0
+        for e in g[Node_array['type']][Node_array['ref']]['value']:
+            cnt+=1
+            nodes_dict[e]=cnt
+        edge_list=[]
+        nodedata=dict()
+        node_list=[]
+        for node in nodes_dict:
+            temp=dict()
+            temp['id']=nodes_dict[node]
+            temp['label']=node
+            node_list.append(temp)
+            neighbour_array=g[c['Node']][node]['value'][c['neighbours']]
+            source=nodes_dict[node]#1,2
+            for e in g[neighbour_array['type']][neighbour_array['ref']]['value']:
+                if e in nodes_dict.keys():
+                    dest=nodes_dict[e]
+                    a=dict()
+                    a['from']=source
+                    a['to']=dest
+                    edge_list.append(a)
+            data_values=g[c['Node']][node]['value']
+
+            nodedata[nodes_dict[node]]=dict()
+            for e in c['Nodefeatures']:
+                try:
+                    data_value=g[data_values[e]['type']][data_values[e]['ref']]
+                    nodedata[nodes_dict[node]][e]=data_value['value']
+                except KeyError:
+                    continue
+            
+        temp_data['Nodedata']=nodedata
+        temp_data['nodes']=node_list
+        temp_data['edge_list']=edge_list
+
+        return JsonResponse(temp_data)
     
-    return JsonResponse(config)
+@method_decorator(csrf_exempt, name='dispatch')
+class configview(View):
+    def post(self,request):
+        # print('Haha')
+        received_json_data=json.loads(request.body.decode("utf-8"))
+        #fix the json format as here you need to access graph objects or i am giving this name and it will be used forever
+        temp_dataset,created=Graph.objects.get_or_create(name="trialgraph")
+        temp_dataset.config=received_json_data
+        temp_dataset.save()
+        print(received_json_data)
+        return HttpResponse('')

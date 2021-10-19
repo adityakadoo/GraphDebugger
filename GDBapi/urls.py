@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.urls import path, include
-from . import views
+from .views import graphview,configview
 
 """API url are added here"""
 urlpatterns = [
-    path("start/", views.start_process, name="start"),
+    path("graph/",graphview.as_view()),
+    path("config/",configview.as_view()),
 ]

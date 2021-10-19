@@ -64,6 +64,7 @@ def get_blocks(frame):
 def get_data():
     frame = gdb.newest_frame()
     blocks = get_blocks(frame)
+    # print(blocks)
     global queue
     queue = []
     res = dict()
@@ -81,7 +82,7 @@ def get_data():
                         "fields": [str(key.name) for key in tp.fields()]
                     }
                 except TypeError:
-                    print(str(tp))
+                    # print(str(tp))
                     res[str(tp)] = dict()
             if addr not in res[str(tp)].keys():
                 res[str(tp)][addr] = {
@@ -90,15 +91,15 @@ def get_data():
                 }
             queue.pop(0)
         except gdb.MemoryError as e:
-            print("gdb.MeroError: ",e)
+            # print("gdb.MeroError: ",e)
             queue.pop(0)
             continue
     return res
 
 def send_request(data: dict):
     response = requests.post("http://localhost:8000/gdb/graph/",
-            data=json.dumps(data,indent=0),
-            headers={'content-type':'application/json'},
+            json=data,
+            headers={'content-type':'application/json','Accept': '*/*'},
         )
     return response 
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
             gdb.flush()
             data = get_data()
             # print(json.dumps(data,indent=4))
-            print(send_request(data).json())
+            send_request(data)
         except gdb.error as e:
             print(traceback.format_exc(),end="")
             print("gdb.error: "+str(e))
