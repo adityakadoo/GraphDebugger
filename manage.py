@@ -6,8 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    current_loc=os.getcwd()
-    sys.path.append(current_loc+"/GraphDebugger/project_env/lib/python3.8/site-packages")
+    current_loc=os.path.realpath(__file__).split("/")
+    sys.path.append("/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/project_env/lib/python3.8/site-packages")
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'GraphDebugger.settings')
     try:
         from django.core.management import execute_from_command_line

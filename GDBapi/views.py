@@ -11,10 +11,10 @@ def start_process(request):
     config = json.loads(request.body)
     # print(config)
     # Will contain binary-path in string format
-    binary = request.GET['path']
+    # binary = request.GET['path']
     # print(binary)
 
-    command = ["gdb","-x","python_scripts/start.py"]
+    # command = ["gdb","-x","python_scripts/start.py"]
     # Add code here to start and maintain a new GDB process with above command
     
-    return JsonResponse(lines.response)
+    return JsonResponse(config)
