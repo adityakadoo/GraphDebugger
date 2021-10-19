@@ -23,8 +23,8 @@ class graphview(View):
         g=available_dataset.data
         temp_data=dict()
         # # nodes_cnt=g[c['Graph']]
-        for e in g[c['Graph']]:
-            if e!='fields' and e['name']==c['graph'] :
+        for e in g[c['Graph']].keys():
+            if e!='fields' and g[c['Graph']][e]['name']==c['graph'] :
                 starting_location=e
         nodes_dict=dict()
         # #nodes_dict['mem_loc']=id
