@@ -32,7 +32,7 @@ class graphview(View):
         cnt=0
         for e in g[Node_array['type']][Node_array['ref']]['value']:
             cnt+=1
-            nodes_dict[e]=cnt
+            nodes_dict[e['ref']]=cnt
         edge_list=[]
         nodedata=dict()
         node_list=[]
@@ -41,11 +41,13 @@ class graphview(View):
             temp['id']=nodes_dict[node]
             temp['label']=node
             node_list.append(temp)
-            neighbour_array=g[c['Node']][node]['value'][c['neighbours']]
+            neighbour_pointer=g[c['Node']][node]['value'][c['neighbours']]
+            neighbour_array= g[neighbour_pointer['type']][neighbour_pointer['ref']]['value']
             source=nodes_dict[node]#1,2
-            for e in g[neighbour_array['type']][neighbour_array['ref']]['value']:
-                if e in nodes_dict.keys():
-                    dest=nodes_dict[e]
+            for e in neighbour_array:
+                e = g[e['type']][e['ref']]['value']
+                if e['ref'] in nodes_dict.keys():
+                    dest=nodes_dict[e['ref']]
                     a=dict()
                     a['from']=source
                     a['to']=dest
