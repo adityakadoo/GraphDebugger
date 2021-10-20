@@ -4,8 +4,9 @@ import React, { useState , Component,createClass } from "react";
 import Graph from "react-graph-vis";
 
 import axios from 'axios'
-import { render } from "@testing-library/react";
+//import { render } from "@testing-library/react";
 import Form2 from './from2'
+
 const api = axios.create({
   baseURL : 'http://localhost:8000/gdb/graph/'
 })
@@ -43,7 +44,7 @@ const MyGraph = () => {
         data=res.data
         console.log(data)
         Mynode  = data.nodes;
-        MyEdge = data.edgelist;
+        MyEdge = data.edge_list;
         
       });
       
@@ -59,7 +60,7 @@ const MyGraph = () => {
     const color = randomColor();
     setState(({ graph: { nodes, edges }}) => {
       Mynode  = data.nodes;
-      MyEdge = data.edgelist;
+      MyEdge = data.edge_list;
      
       
       
@@ -90,7 +91,7 @@ const MyGraph = () => {
       //   { id: 4, label: "Node 4", color: "#7be041" },
       //   { id: 5, label: "Node 5", color: "#41e0c9" }
       // ],
-      edges:MyEdge
+      edges:MyEdge,
       //  [
       //   { from: 1, to: 2 },
       //   { from: 1, to: 3 },
