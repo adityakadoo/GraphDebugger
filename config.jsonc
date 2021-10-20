@@ -1,0 +1,16 @@
+{
+    "format": "Adj-List",
+    "Graph": "Graph",
+    "graph": "graph",
+    "Node": "Node",
+    "Nodefeatures": {
+        "data1": "int",
+        "data2": "char",
+        "data4": "float",
+        "data5": "bool"
+    },
+    "Edge": null,
+    "Edgefeatures": {},
+    "nodelist":"nodes",
+    "neighbours":"neighbours"
+}
