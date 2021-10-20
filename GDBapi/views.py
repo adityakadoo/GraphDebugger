@@ -58,7 +58,7 @@ class graphview(View):
             for e in c['Nodefeatures']:
                 try:
                     data_value=g[data_values[e]['type']][data_values[e]['ref']]
-                    nodedata[nodes_dict[node]][e]=data_value['value']
+                    nodedata[nodes_dict[node]][e]=str(data_value['value'])
                 except KeyError:
                     continue
             
