@@ -13,10 +13,10 @@ class Form2 extends React.Component {
        Graph:"",
        graph:"",
        Node:"",
-       Nodefeatures:[{dataname:"",datatype:""},],
+       Nodefeatures:[{dataname:"",datatype:""}],
        Edge:null,
        Edgefeatures: [],
-       
+       done:true,
        nodelist:"",
        neighbours:""
      };
@@ -78,13 +78,13 @@ class Form2 extends React.Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    this.state.done = true;
-    let dict = {};
+    this.state.done = false;
+    var dict = {};
     dict=this.state;
-    let new_node = this.state.Nodefeatures;
-    let node_dict = {};
+    var new_node = this.state.Nodefeatures;
+    var node_dict = {};
     for (var i=0; i < new_node.length; i++){
-      let a_dict = new_node[i];
+      var a_dict = new_node[i];
       node_dict[a_dict["dataname"]] = a_dict["datatype"];
     }
     dict["Nodefeatures"] = node_dict;
@@ -171,7 +171,7 @@ class Form2 extends React.Component {
             
             </div>
             <p className="head" ><label className="hname">Node Features</label></p>
-          {this.state.Nodefeatures.map((element, index) => (
+          {this.state.done && this.state.Nodefeatures.map((element, index) => (
            <div className="form-inline" key={index}>
               <label className="name1">Data Name</label>
               <input className="inp1" type="text" value={element.dataname || ""} onChange={e => this.handleChangedatan(index, e)} />
