@@ -1,0 +1,14 @@
+{
+    
+    "id":["1","2","3","4","5","6"],
+    "edgelist":[["1","2"],["2","3"]],
+
+    "data":{"1":{
+        "feild1": "value",
+        "feild2": "value",
+        "feild3": "value",
+        "feild4": "value"
+    }
+    
+}
+}

@@ -1,0 +1,126 @@
+
+ .form-inline{
+    background-color: rgb(249, 246, 246);
+    width: 75%;
+    padding: 1% 4%;
+    margin: 10px 12.5% 10px 12.5%;
+    box-sizing: border-box;
+    border: 1px solid rgb(201, 190, 190) ;
+    border-radius: 8px;
+}
+select {
+    /* appearance: none; */
+    outline: 0;
+    background: white;
+    background-image: none;
+    width: 100%;
+    padding: 10px 20px;
+    margin: 10px 0px 10px 10px;
+    height: 100%;
+    font-size: 19px;
+    color: black;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 2px solid rgb(160, 153, 153);
+    border-radius: 4px;
+}
+.select {
+    position: relative;
+    display: block;
+    width: 15em;
+    height: 2em;
+    line-height: 3;
+    overflow: hidden;
+    border-radius: .25em;
+    padding-bottom:10px;
+      
+}
+.inp{
+    width: 100%;
+    padding: 10px 20px;
+    margin: 10px 0px 10px 10px;
+    box-sizing: border-box;
+    border: 2px solid rgb(160, 153, 153);
+    border-radius: 4px;
+    background-color:white;
+    opacity: 1;
+    color: black;
+    font-size: 20px;  
+}
+.name{
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    font-size: 21px;
+    margin: auto 10% auto auto;
+    color: #040507;
+    font-style:bold;
+    
+}
+.inp1{
+    width:27%;
+    padding: 10px 20px;
+    margin: auto;
+    box-sizing: border-box;
+    border: 2px solid rgb(160, 153, 153);
+    border-radius: 4px;
+    background-color:white;
+    opacity: 1;
+    color: black;
+    font-size: 20px;
+    
+}
+.name1{
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    font-size: 21px;
+    margin: auto 0.5% auto -1%;
+    color: #040507;
+    font-style:bold;   
+}
+.name2{
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    font-size: 21px;
+    margin: auto 0.5% auto 3%;
+    color: #040507;
+    font-style:bold;   
+}
+.buttonadd,.buttonsubmit,.buttonrem {
+    background-color: rgb(81, 81, 210);
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  .buttonrem{
+       width:15%; 
+      margin: auto 1% auto 2%;
+  }
+  .buttonadd{
+    margin: auto auto auto 45%;
+  }
+  .buttonsubmit{
+    margin: auto auto auto 80%;
+  }
+  .buttonadd:hover,.buttonsubmit:hover,.buttonrem:hover {
+    background-color: rgb(46, 46, 189);
+    color: white;
+  }
+  .head{
+    background-color: rgb(249, 246, 246);
+    width: 75%;
+    padding: 0.5% 4%;
+    margin: 10px 12.5% 10px 12.5%;
+    box-sizing: border-box;
+    border: 1px solid rgb(201, 190, 190) ;
+    border-radius: 8px;
+  }
+  .hname{
+    font-family: "Trebuchet MS", Verdana, Halvetica, Arial;
+    font-size: 21px;
+    color: #040507;
+    font-style:bold;  
+    margin: auto auto auto 44%;
+  }
+
