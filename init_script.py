@@ -15,16 +15,25 @@ def start_django_server():
 
 def add_varr(varr, name) -> dict:
     tp = varr.type
-    if tp.code == gdb.TYPE_CODE_PTR:
-        return add_varr(varr.dereference(),name)
     try:
-        if tp.code == gdb.TYPE_CODE_ARRAY:
+        if tp.code == gdb.TYPE_CODE_PTR:
+            res = {
+                'ref':str(varr).split(" ")[0],
+                'type': str(tp)[:-2]
+            }
+            queue.append((varr.dereference(),"*"+name))
+            return res
+        elif tp.code == gdb.TYPE_CODE_ARRAY:
             min,max = tp.range()
             array = []
             for i in range(min,max+1):
                 temp_varr = varr[i]
                 queue.append((temp_varr,name+"["+str(i)+"]"))
-                array.append(str(temp_varr.address).split(" ")[0])
+                temp = {
+                    "ref": str(temp_varr.address).split(" ")[0],
+                    "type": str(temp_varr.type)
+                }
+                array.append(temp)
             return array
         elif tp.code == gdb.TYPE_CODE_STRUCT:
             fields = tp.fields()
@@ -64,7 +73,6 @@ def get_blocks(frame):
 def get_data():
     frame = gdb.newest_frame()
     blocks = get_blocks(frame)
-    # print(blocks)
     global queue
     queue = []
     res = dict()
@@ -82,7 +90,6 @@ def get_data():
                         "fields": [str(key.name) for key in tp.fields()]
                     }
                 except TypeError:
-                    # print(str(tp))
                     res[str(tp)] = dict()
             if addr not in res[str(tp)].keys():
                 res[str(tp)][addr] = {
@@ -98,8 +105,8 @@ def get_data():
 
 def send_request(data: dict):
     response = requests.post("http://localhost:8000/gdb/graph/",
-            json=data,
-            headers={'content-type':'application/json','Accept': '*/*'},
+            data=json.dumps(data,indent=0),
+            headers={'content-type':'application/json'},
         )
     return response 
 
