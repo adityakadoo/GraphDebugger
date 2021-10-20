@@ -52,6 +52,8 @@ def add_varr(varr, name) -> dict:
         elif tp.code == gdb.TYPE_CODE_STRING or tp.code == gdb.TYPE_CODE_CHAR:
             return str(varr)
         elif tp.code == gdb.TYPE_CODE_INT:
+            if(str(tp)=='char'):
+                return chr(int(varr)%256)
             return int(varr)
         elif tp.code == gdb.TYPE_CODE_FLT:
             return float(varr)
