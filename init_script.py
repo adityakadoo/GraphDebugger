@@ -5,6 +5,9 @@ import json
 import requests
 from threading import Thread
 import sys,os
+current_loc=os.path.realpath(__file__).split("/")
+sys.path.append("/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger")
+from helper_scripts.handler import *
 
 def start_react_server():
     sp.run(["npm","start","--prefix","~/GraphDebugger/Frontend/graph-ui"],stdin=sp.PIPE,capture_output=True)
@@ -13,41 +16,21 @@ def start_django_server():
     current_loc=os.path.realpath(__file__).split("/")
     sp.run(["python3","/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py","runserver"],stdin=sp.PIPE,capture_output=True)
 
-def add_varr(varr, name) -> dict:
+def add_varr(varr):
     tp = varr.type
+    varr, tp = pointer_handler(varr, tp)
     try:
-        if tp.code == gdb.TYPE_CODE_PTR:
-            res = {
-                'ref':str(varr).split(" ")[0],
-                'type': str(tp)[:-2]
-            }
-            queue.append((varr.dereference(),"*"+name))
-            return res
-        elif tp.code == gdb.TYPE_CODE_ARRAY:
-            min,max = tp.range()
-            array = []
-            for i in range(min,max+1):
-                temp_varr = varr[i]
-                queue.append((temp_varr,name+"["+str(i)+"]"))
-                temp = {
-                    "ref": str(temp_varr.address).split(" ")[0],
-                    "type": str(temp_varr.type)
-                }
-                array.append(temp)
+        if tp.code == gdb.TYPE_CODE_ARRAY:
+            array, q = array_handler(varr, tp)
+            for e in q:
+                queue.append(e)
             return array
         elif tp.code == gdb.TYPE_CODE_STRUCT:
-            fields = tp.fields()
-            struct = dict()
-            for key in fields:
-                temp_varr = varr[key]
-                struct[key.name] = {
-                    "ref": str(temp_varr.address).split(" ")[0],
-                    "type": str(temp_varr.type)
-                }
-                queue.append((temp_varr,name+"."+key.name))
+            struct, q = struct_handler(varr, tp)
+            for e in q:
+                queue.append(e)
             return struct
         elif tp.code == tp.code == gdb.TYPE_CODE_ENUM:
-            fields = tp.fields()
             return str(varr)
         elif tp.code == gdb.TYPE_CODE_STRING or tp.code == gdb.TYPE_CODE_CHAR:
             return str(varr)
@@ -56,7 +39,7 @@ def add_varr(varr, name) -> dict:
                 return chr(int(varr)%256)
             return int(varr)
         elif tp.code == gdb.TYPE_CODE_FLT:
-            return float(varr)
+            return round(float(varr),6)
         elif tp.code == gdb.TYPE_CODE_BOOL:
             return bool(varr)
         else:
@@ -84,19 +67,12 @@ def get_data():
     while len(queue) != 0:
         try:
             varr,name = queue[0]
-            addr = str(varr.address).split(" ")[0]
             tp = varr.type
-            if str(tp) not in res.keys():
-                try:
-                    res[str(tp)] = {
-                        "fields": [str(key.name) for key in tp.fields()]
-                    }
-                except TypeError:
-                    res[str(tp)] = dict()
-            if addr not in res[str(tp)].keys():
-                res[str(tp)][addr] = {
+            type_addr = str(tp)+" "+str(varr.address).split(" ")[0]
+            if type_addr not in res.keys():
+                res[type_addr] = {
                     'name': name,
-                    'value': add_varr(varr,name)
+                    'value': add_varr(varr)
                 }
             queue.pop(0)
         except gdb.MemoryError as e:
