@@ -1,113 +1,79 @@
 import gdb
 import subprocess as sp
-import traceback
 import json
 import requests
-from threading import Thread
-import sys,os
+from threading import Thread, _active
+import sys,os,signal
+
 current_loc=os.path.realpath(__file__).split("/")
 sys.path.append("/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger")
+
 from helper_scripts.handler import *
 
+django_thread = None
+react_thread = None
+django_server = None
+react_server = None
+
 def start_react_server():
-    sp.run(["npm","start","--prefix","~/GraphDebugger/Frontend/graph-ui"],stdin=sp.PIPE,capture_output=True)
+    global react_server
+    react_server = sp.Popen("npm start --prefix ~/GraphDebugger/Frontend/graph-ui",stdin=sp.PIPE,stdout=sp.PIPE,shell=True,preexec_fn=os.setsid)
 
 def start_django_server():
-    current_loc=os.path.realpath(__file__).split("/")
-    sp.run(["python3","/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py","runserver"],stdin=sp.PIPE,capture_output=True)
+    global current_loc
+    global django_server
+    django_server = sp.Popen("python3 /"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py runserver",stdin=sp.PIPE,stdout=sp.PIPE,shell=True,preexec_fn=os.setsid)
 
-def add_varr(varr):
-    tp = varr.type
-    varr, tp = pointer_handler(varr, tp)
-    try:
-        if tp.code == gdb.TYPE_CODE_ARRAY:
-            array, q = array_handler(varr, tp)
-            for e in q:
-                queue.append(e)
-            return array
-        elif tp.code == gdb.TYPE_CODE_STRUCT:
-            struct, q = struct_handler(varr, tp)
-            for e in q:
-                queue.append(e)
-            return struct
-        elif tp.code == tp.code == gdb.TYPE_CODE_ENUM:
-            return str(varr)
-        elif tp.code == gdb.TYPE_CODE_STRING or tp.code == gdb.TYPE_CODE_CHAR:
-            return str(varr)
-        elif tp.code == gdb.TYPE_CODE_INT:
-            if(str(tp)=='char'):
-                return chr(int(varr)%256)
-            return int(varr)
-        elif tp.code == gdb.TYPE_CODE_FLT:
-            return round(float(varr),6)
-        elif tp.code == gdb.TYPE_CODE_BOOL:
-            return bool(varr)
-        else:
-            return str(varr.type.code)+" "+str(varr)
-    except(gdb.error):
-        return str(varr.type.code)+" "+str(varr)
+class Run_server(gdb.Command):
+    """Command to start Django and React servers"""
 
-def get_blocks(frame):
-    curr_block = frame.block()
-    blocks = [curr_block]
-    while curr_block.function is None:
-        curr_block = curr_block.superblock
-        blocks.append(curr_block)
-    return blocks
+    def __init__(self) -> None:
+        super(Run_server, self).__init__("run-server", gdb.COMMAND_SUPPORT)
 
-def get_data():
-    frame = gdb.newest_frame()
-    blocks = get_blocks(frame)
-    global queue
-    queue = []
-    res = dict()
-    for block in blocks:
-        for key in block:
-            queue.append((key.value(frame),key.name))
-    while len(queue) != 0:
-        try:
-            varr,name = queue[0]
-            tp = varr.type
-            type_addr = str(tp)+" "+str(varr.address).split(" ")[0]
-            if type_addr not in res.keys():
-                res[type_addr] = {
-                    'name': name,
-                    'value': add_varr(varr)
-                }
-            queue.pop(0)
-        except gdb.MemoryError as e:
-            # print("gdb.MeroError: ",e)
-            queue.pop(0)
-            continue
-    return res
+    def invoke(self, arg, from_tty):
+        # Django
+        global django_thread
+        django_thread=Thread(target=start_django_server)
+        django_thread.start()
 
-def send_request(data: dict):
+        # React
+        global react_thread
+        react_thread=Thread(target=start_react_server)
+        react_thread.start()
+
+class Close_server(gdb.Command):
+    """Command to stop Django and React servers"""
+
+    def __init__(self) -> None:
+        super(Close_server, self).__init__("close-server", gdb.COMMAND_SUPPORT)
+    
+    def invoke(self, arg, from_tty):
+        global react_thread, react_server, django_thread, django_server
+        if react_server is not None:
+            os.killpg(os.getpgid(react_server.pid), signal.SIGKILL)
+        if django_server is not None:
+            os.killpg(os.getpgid(django_server.pid), signal.SIGKILL)
+        if react_thread is not None:
+            react_thread.join()
+            react_thread = None
+        if django_thread is not None:
+            django_thread.join()
+            django_thread = None
+
+def send_request(event):
+    data = get_data()
     response = requests.post("http://localhost:8000/gdb/graph/",
             data=json.dumps(data,indent=0),
             headers={'content-type':'application/json'},
         )
-    return response 
+    if response.status_code != 200:
+        print("Error occured while connecting with status code " + str(response.status_code) + ".")
+    return
 
-if __name__ == "__main__":
-    django_thread=Thread(target=start_django_server)
-    django_thread.start()
-    react_thread=Thread(target=start_react_server)
-    react_thread.start()
-    print("\033[0;33;1mPress Ctrl+C then enter to start a normal gdb session.")
-    while(True):
-        print("\033[0;34;1mgdb-graph",end="")
-        command=input("\033[0;37;0m$ ")
-        try:
-            gdb.execute(command)
-            gdb.flush()
-            data = get_data()
-            # print(json.dumps(data,indent=4))
-            send_request(data)
-        except gdb.error as e:
-            print(traceback.format_exc(),end="")
-            print("gdb.error: "+str(e))
-            continue
-        except KeyboardInterrupt:
-            django_thread.join()
-            react_thread.join()
-            break  
+Run_server()
+Close_server()
+
+gdb.events.stop.connect(send_request)
+
+print("\033[0;35;1mEnter 'run-server' command to start Graph Debugger app.")
+print("\033[0;37;0m",end="")

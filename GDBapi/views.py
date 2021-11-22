@@ -24,7 +24,7 @@ class graphview(View):
         res=dict()
         for e in g.keys():
             if e.split(' ')[0] == c['Graph'] and g[e]['name'] == c['graph']:
-                node_list=g[e]['value'][c['nodelist']]
+                node_list=g[g[e]['value'][c['nodelist']]]['value']
                 break
         
         res['nodes']=[]
@@ -48,7 +48,7 @@ class graphview(View):
             res['Nodedata'][i+1]=feature_dict
         
         for node in node_list :    
-            for neighbour in g[node]['value'][c['neighbours']]:
+            for neighbour in g[g[node]['value'][c['neighbours']]]['value']:
                 if neighbour in node_list:
                     temp_edge={ 
                         'from':temp_id[node],
