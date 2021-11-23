@@ -10,8 +10,15 @@ float fff = 782.4342;
 class Node{
     public:
         // Node(){}
-        Node(): deg(0){}
+        Node(): deg(0){
+            for(int i=0;i<MAX_NODES;i++){
+                neighbours[i] = NULL;
+            }
+        }
         Node(int i,char c,colour e,float f,bool b,string s){
+            for(int i=0;i<MAX_NODES;i++){
+                neighbours[i] = NULL;
+            }
             deg = 0;
             data1 = i;
             data2 = c;

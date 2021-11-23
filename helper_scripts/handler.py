@@ -8,8 +8,11 @@ queue = None
 
 def pointer_handler(varr, tp):
     while tp.code == gdb.TYPE_CODE_PTR:
-        varr = varr.dereference()
-        tp = varr.type
+        try:
+            varr = varr.dereference()
+            tp = varr.type
+        except gdb.MemoryError as e:
+            return None,tp
     return varr,tp
 
 def array_handler(varr, tp):
@@ -20,9 +23,12 @@ def array_handler(varr, tp):
         temp_varr = varr[i]
         temp_tp = temp_varr.type
         temp_varr, temp_tp = pointer_handler(temp_varr, temp_tp)
-        queue.append(("["+str(i)+"]",temp_varr))
-        temp = str(temp_tp)+" "+str(temp_varr.address).split(" ")[0]
-        array.append(temp)
+        if temp_varr is None:
+            array.append("NULL 0x0")
+        else:
+            queue.append(("["+str(i)+"]",temp_varr))
+            temp = str(temp_tp)+" "+str(temp_varr.address).split(" ")[0]
+            array.append(temp)
     return array
 
 def struct_handler(varr, tp):
@@ -33,8 +39,8 @@ def struct_handler(varr, tp):
         temp_varr = varr[key]
         temp_tp = temp_varr.type
         temp_varr, temp_tp = pointer_handler(temp_varr, temp_tp)
-        if temp_tp.code == gdb.TYPE_CODE_ARRAY:
-            struct[key.name] = array_handler(temp_varr, temp_tp)
+        if temp_varr is None:
+            struct[key.name] = "NULL 0x0"
         else:
             struct[key.name] = str(temp_tp)+" "+str(temp_varr.address).split(" ")[0]
             queue.append((key.name,temp_varr))
@@ -44,7 +50,9 @@ def add_varr(varr):
     global queue
     tp = varr.type
     varr, tp = pointer_handler(varr, tp)
-    
+    if varr is None:
+        return None
+
     try:
         tag = get_basic_type(tp)
         if tag is not None:
@@ -79,9 +87,9 @@ def add_varr(varr):
             return bool(varr)
         else:
             return str(varr.type.code)+" "+str(varr)
-    except error as e:
-        traceback.print_exception(e)
-        return str(varr.type.code)+" "+str(varr)
+    except gdb.MemoryError as e:
+        # print(traceback.format_exc())
+        return None
 
 def get_blocks(frame):
     curr_block = frame.block()
@@ -96,7 +104,12 @@ def get_data():
     blocks = get_blocks(frame)
     global queue
     queue = []
-    res = dict()
+    res = {
+        "NULL 0x0" : {
+            "name": "nullptr",
+            "value": None
+        }
+    }
     for block in blocks:
         for key in block:
             queue.append((key.name,key.value(frame)))
@@ -111,9 +124,9 @@ def get_data():
                     'value': add_varr(varr)
                 }
             queue.pop(0)
-        except gdb.MemoryError as e:
-            # print("gdb.MeroError: ",e)
+        except error as e:
+            # print("gdb.MemoryError: ",e)
             queue.pop(0)
-            traceback.print_exception(e)
+            print(traceback.format_exc())
             continue
     return res

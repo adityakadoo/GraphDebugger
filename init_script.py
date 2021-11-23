@@ -67,7 +67,7 @@ def send_request(event):
             headers={'content-type':'application/json'},
         )
     if response.status_code != 200:
-        print("Error occured while connecting with status code " + str(response.status_code) + ".")
+        print("Error occured while connecting, with status code " + str(response.status_code) + ".")
     return
 
 Run_server()
