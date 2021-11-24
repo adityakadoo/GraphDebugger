@@ -61,8 +61,11 @@ def add_varr(varr):
             if match is not None:
                 basename = match.group(1)
                 if basename in supported_handlers:
-                    handler =  supported_handlers[basename](str(tp),varr)
+                    handler =  supported_handlers[basename](basename,varr)
                     res = []
+                    if hasattr(handler, 'display_hint'):
+                        if handler.display_hint() == "string":
+                            return handler.to_string()
                     for child in handler.children():
                         temp_varr, temp_tp = pointer_handler(child[1],child[1].type)
                         queue.append((child[0],temp_varr))
@@ -75,10 +78,8 @@ def add_varr(varr):
             return struct_handler(varr, tp)
         elif tp.code == gdb.TYPE_CODE_ENUM:
             return str(varr)
-        elif tp.code == gdb.TYPE_CODE_STRING or tp.code == gdb.TYPE_CODE_CHAR:
-            return str(varr)
         elif tp.code == gdb.TYPE_CODE_INT:
-            if(str(tp)=='char'):
+            if str(tp) == 'char' or str(tp) == 'const char':
                 return chr(int(varr)%256)
             return int(varr)
         elif tp.code == gdb.TYPE_CODE_FLT:

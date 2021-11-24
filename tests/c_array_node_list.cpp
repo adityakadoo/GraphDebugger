@@ -9,7 +9,6 @@ float fff = 782.4342;
 
 class Node{
     public:
-        // Node(){}
         Node(): deg(0){
             for(int i=0;i<MAX_NODES;i++){
                 neighbours[i] = NULL;
@@ -32,14 +31,11 @@ class Node{
         void addNeighbour(Node *neighbour){
             neighbours[deg] = neighbour;
             deg++;
-            // neighbours.push_back(neighbour);
         };
 
-        // Vector or list of elements containing pointers to the neighbours of the node
+        // C-style null initialised array of elements containing pointers to the neighbours of the node
         Node* neighbours[MAX_NODES];
         int deg;
-        // vector<Node*> neighbours;
-        //list<Node*> neighbours;
 
         //Data stored in the node
         int data1;
@@ -52,7 +48,6 @@ class Node{
 
 class Graph{
     public:
-        // vector<Node*> nodes;
         Node nodes[MAX_NODES];
         int size;
 
@@ -63,12 +58,9 @@ int main(/*int argc, char const *argv[]*/){
 
     //creating an instance of the graph object
     Graph graph = Graph();
-    // vector<Node> &nodes = graph.nodes;
     
     //Number of Nodes
-    int n = 6;//stoi(argv[1]);
-    // cin>>n;
-    // graph.nodes.resize(n);
+    int n = 6;
 
     //Adding the nodes
     for(int i=0;i<n;i++){
@@ -78,12 +70,11 @@ int main(/*int argc, char const *argv[]*/){
     }
     
     //m==Number of edges
-    int m = 6;//stoi(argv[2]);// cin>>m;
+    int m = 6;
 
     // Adding the Edges
     for(int i=0;i<m;i++){
         int u = (i),v = (i+1)%6;
-        // cin>>u>>v;
         graph.nodes[u].addNeighbour(&graph.nodes[v]);
     }
 
@@ -105,7 +96,6 @@ int main(/*int argc, char const *argv[]*/){
     //Viewing the values of all nodes
     for(int i=0;i<graph.size;i++/*auto it:graph.nodes*/){
         cout<<graph.nodes[i].data2<<" ";
-        // cout<<it.data2<<" ";
     }
     cout<<"\n";
 }

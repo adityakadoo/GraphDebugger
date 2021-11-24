@@ -573,7 +573,7 @@ class StdTuplePrinter:
 
     def __init__ (self, typename, val):
         self.typename = strip_versioned_namespace(typename)
-        self.val = val;
+        self.val = val
 
     def children (self):
         return self._iterator (self.val)
@@ -918,8 +918,8 @@ class StdStringPrinter:
             reptype = gdb.lookup_type (str (realtype) + '::_Rep').pointer ()
             header = ptr.cast(reptype) - 1
             length = header.dereference ()['_M_length']
-        if hasattr(ptr, "lazy_string"):
-            return ptr.lazy_string (length = length)
+        # if hasattr(ptr, "lazy_string"):
+        #     return ptr.lazy_string (length = length)
         return ptr.string (length = length)
 
     def display_hint (self):
@@ -2036,5 +2036,13 @@ supported_handlers = {
     "std::deque" : StdDequePrinter,
     "std::queue" : StdStackOrQueuePrinter,
     "std::stack" : StdStackOrQueuePrinter,
-    'std::priority_queue': StdStackOrQueuePrinter
+    'std::priority_queue': StdStackOrQueuePrinter,
+    "std::map" : StdMapPrinter,
+    "std::multimap" : StdMapPrinter,
+    "std::set" : StdSetPrinter,
+    "std::multiset" : StdSetPrinter,
+    "std::tuple" : StdTuplePrinter,
+    "std::pair" : StdPairPrinter,
+    "std::__cxx11::basic_string" : StdStringPrinter,
+    "std::basic_string" : StdStringPrinter
 }
