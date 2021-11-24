@@ -2030,5 +2030,11 @@ def build_libstdcxx_dictionary ():
 
 # build_libstdcxx_dictionary ()
 supported_handlers = {
-    "std::vector" : StdVectorPrinter
+    "std::vector" : StdVectorPrinter,
+    "std::__cxx11::list" : StdListPrinter,
+    "std::list" : StdListPrinter,
+    "std::deque" : StdDequePrinter,
+    "std::queue" : StdStackOrQueuePrinter,
+    "std::stack" : StdStackOrQueuePrinter,
+    'std::priority_queue': StdStackOrQueuePrinter
 }
