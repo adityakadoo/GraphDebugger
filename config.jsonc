@@ -10,28 +10,32 @@
         "Graph": "Graph",
         "graph": "graph",
         "Node": "Node",
+        "nodelist": "nodes",
         "Edge": "Edge",
         "edgelist": "edges",
         "from": "Node1",
         "to": "Node2"
     },
-    "Hybrid": {
+    "Edge-Map": {
         "Graph": "Graph",
         "graph": "graph",
         "Node": "Node",
-        "nodelist": "nodes",
-        "node-ke-edges": "edges",
         "Edge": "Edge",
-        "from": "Node1",
-        "to": "Node2"
+        "edgemap": "edge_map",
+        "nodelist": "nodes"
     },
-    "Matrix": {
-        "Graph": "Graph",
-        "graph": "graph",
-        "Node": "Node",
-        "Edge": "Edge", // Optional
-        "Matrix": "Matrix" // Preferably a Map
-    },
-    "STL Containers": ["C-style array", "vector", "list", "array", "deque", "set", "map"],
-    "STL Extra Stuff": ["pair", "tuple", "string"]
+    "STL Containers": [
+        "C-style array",
+        "vector",
+        "list",
+        "array",
+        "deque",
+        "set",
+        "map"
+    ],
+    "STL Extra Stuff": [
+        "pair",
+        "tuple",
+        "string"
+    ]
 }

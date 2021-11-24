@@ -62,12 +62,15 @@ class Close_server(gdb.Command):
 
 def send_request(event):
     data = get_data()
-    response = requests.post("http://localhost:8000/gdb/graph/",
-            data=json.dumps(data,indent=0),
-            headers={'content-type':'application/json'},
-        )
-    if response.status_code != 200:
-        print("Error occured while connecting, with status code " + str(response.status_code) + ".")
+    try:    
+        response = requests.post("http://localhost:8000/gdb/graph/",
+                data=json.dumps(data,indent=0),
+                headers={'content-type':'application/json'},
+            )
+        if response.status_code != 200:
+            print("Error occured while connecting, with status code " + str(response.status_code) + ".")
+    except requests.exceptions.ConnectionError as e:
+        pass
     return
 
 Run_server()
