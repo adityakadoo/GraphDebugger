@@ -17,12 +17,12 @@ react_server = None
 
 def start_react_server():
     global react_server
-    react_server = sp.Popen("npm start --prefix ~/GraphDebugger/Frontend/graph-ui",stdin=sp.PIPE,stdout=sp.PIPE,shell=True,preexec_fn=os.setsid)
+    react_server = sp.Popen("npm start --prefix ~/GraphDebugger/Frontend/graph-ui",stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.PIPE,shell=True,preexec_fn=os.setsid)
 
 def start_django_server():
     global current_loc
     global django_server
-    django_server = sp.Popen("python3 /"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py runserver",stdin=sp.PIPE,stdout=sp.PIPE,shell=True,preexec_fn=os.setsid)
+    django_server = sp.Popen("python3 /"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py runserver",stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.PIPE,shell=True,preexec_fn=os.setsid)
 
 class Run_server(gdb.Command):
     """Command to start Django and React servers"""
