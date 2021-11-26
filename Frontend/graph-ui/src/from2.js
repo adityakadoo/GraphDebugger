@@ -1,5 +1,5 @@
 import React from "react";
-import './styles.css'
+import './better_styles.css'
 import axios from 'axios'
 
 class Form2 extends React.Component {
@@ -131,86 +131,77 @@ class Form2 extends React.Component {
   render() {
     
     return (
-
+        <div className="form-style">
         <form  onSubmit={this.handleSubmit}>
-            <p className="head" ><label className="hname">Graph</label></p>
+          <legend><span className="number">1</span> Graph</legend>
 
+        <div> 
 
-        <div className="form-inline">
-
-            <p><label className="name">Graph Class Name</label>
-            <input className="inp" type="text"  value={this.state.Graph ||""} onChange={e => this.handleChangeGraph(e)}/></p>
-            
-            <p><label className="name">Graph Object Name</label>
-            <input className="inp" type="text"  value={this.state.graph ||""} onChange={e => this.handleChangeGraphobj(e)}/></p>
-            
-            <p><label className="name">Node Class Name</label>
-            <input className="inp" type="text"  value={this.state.Node ||""} onChange={e => this.handleChangeNode(e)}/></p>
-            
-            <p><label className="name">Nodelist Name</label>
-            <input className="inp" type="text"  value={this.state.nodelist ||""} onChange={e => this.handleChangenodelist(e)}/></p>
-        
-        </div>  
-
-
-        <div className="form-inline"> 
-
-            <label className="name">
-             Choose Format of Graph:
+            <label className="name">Graph formats:</label>
             <select value={this.state.format} onChange={e=>this.handleChangelist(e)}>
               <option value="Adj-List">Adj-List</option> 
               <option value="Edge-List">Edge-List</option> 
               <option value="Edge-Map">Edge-Map</option> 
             </select>
-            </label>
 
-        </div>
+        {/* </div>
 
 
-        <div className="form-inline">
+        <div className="form-inline"> */}
+
+            {/* <p><label className="name">Graph Class Name</label> */}
+            <input type="text" placeholder="Graph Class *" value={this.state.Graph ||""} onChange={e => this.handleChangeGraph(e)}/>
+            
+            {/* <p><label className="name">Graph Object Name</label> */}
+            <input type="text" placeholder="Graph Instance *" value={this.state.graph ||""} onChange={e => this.handleChangeGraphobj(e)}/>
+            
+            {/* <p><label className="name">Node Class Name</label> */}
+            <input type="text" placeholder="Node Class *" value={this.state.Node ||""} onChange={e => this.handleChangeNode(e)}/>
+            
+            {/* <p><label className="name">Nodelist Name</label> */}
+            <input type="text" placeholder="Container for Nodes *" value={this.state.nodelist ||""} onChange={e => this.handleChangenodelist(e)}/>
+            
+        {/* </div>  
+
+
+
+        <div className="form-inline"> */}
 
           {this.state.format==="Adj-List" && (
-            <p><label className="name"> Neighbours Name</label>
-            <input className="inp" type="text"  value={this.state.neighbours ||""} onChange={e => this.handleChangeneighbours(e)}/></p>
+            <input type="text" placeholder="Container for Adjacent Nodes *" value={this.state.neighbours ||""} onChange={e => this.handleChangeneighbours(e)}/>
           )}
           {this.state.format==="Edge-List" && (
-            <p><label className="name"> Edge Name</label>
-            <input className="inp" type="text"  value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/></p>            
+            <input type="text" placeholder="Edge Class *" value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/>           
           )}
           {this.state.format==="Edge-Map" && (
-            <p><label className="name"> Edge Name</label>
-            <input className="inp" type="text"  value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/></p>            
+            <input type="text" placeholder="Edge Class *" value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/>
           )}          
           {this.state.format==="Edge-List" && (
-            <p><label className="name"> Edgelist Name</label>
-            <input className="inp" type="text"  value={this.state.edgelist ||""} onChange={e => this.handleChangeedgelist(e)}/></p>
+            <input type="text" placeholder="Container for Edges *" value={this.state.edgelist ||""} onChange={e => this.handleChangeedgelist(e)}/>
           )}
           {this.state.format==="Edge-List" && (
-            <p><label className="name"> from Node Name</label>
-            <input className="inp" type="text"  value={this.state.from ||""} onChange={e => this.handleChangefrom(e)}/></p>
+            <input type="text" placeholder="Source Node *" value={this.state.from ||""} onChange={e => this.handleChangefrom(e)}/>
           )}
-          {this.state.format==="Edge-List" && (  
-            <p><label className="name"> to Node Name</label>
-            <input className="inp" type="text"  value={this.state.to ||""} onChange={e => this.handleChangeto(e)}/></p>            
+          {this.state.format==="Edge-List" && (
+            <input type="text" placeholder="Target Node *" value={this.state.to ||""} onChange={e => this.handleChangeto(e)}/>
           )}
-          {this.state.format==="Edge-Map" && (  
-            <p><label className="name"> edgemap Name</label>
-            <input className="inp" type="text"  value={this.state.edgemap ||""} onChange={e => this.handleChangeedgemap(e)}/></p>
+          {this.state.format==="Edge-Map" && (
+            <input type="text" placeholder="Map of Edges *" value={this.state.edgemap ||""} onChange={e => this.handleChangeedgemap(e)}/>
           )}  
 
         </div>
 
 
-        <p className="head" ><label className="hname">Node Features</label></p>
+        <legend><span className="number">2</span> Node Features</legend>
           
           {this.state.done && this.state.Nodefeatures.map((element, index) => (
            
-           <div className="form-inline" key={index}>
+           <div key={index}>
               
-              <label className="name1">Data Name</label>
-              <input className="inp1" type="text" value={element.dataname || ""} onChange={e => this.handleChangedatan(index, e)} />
-              <label className="name2">Data Type</label>
-              <input className="inp1" type="text"  value={element.datatype || ""} onChange={e => this.handleChangedatat(index, e)} />
+              {/* <label className="name1">Data Name</label> */}
+              <input type="text" className="form-inline" placeholder="Variable Name *" value={element.dataname || ""} onChange={e => this.handleChangedatan(index, e)} />
+              {/* <label className="name2">Data Type</label> */}
+              <input type="text" className="form-inline" placeholder="Variable Type *" value={element.datatype || ""} onChange={e => this.handleChangedatat(index, e)} />
               {
                 index ? 
                   <button className="buttonrem"  type="button"  onClick={() => this.removeFormFields(index)}>Remove</button> 
@@ -226,9 +217,9 @@ class Form2 extends React.Component {
               <button className="buttonadd" type="button" onClick={() => this.addFormFields()}>Add</button>
               <p><button className="buttonsubmit" type="submit">Submit</button></p>
          </div>
+        
 
-
-      </form>
+      </form></div>
     );
 }
 }
