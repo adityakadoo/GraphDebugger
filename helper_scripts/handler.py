@@ -5,6 +5,7 @@ import re
 import traceback
 
 queue = None
+res = {}
 
 def pointer_handler(varr, tp):
     while tp.code == gdb.TYPE_CODE_PTR:
@@ -18,36 +19,48 @@ def pointer_handler(varr, tp):
 def array_handler(varr, tp):
     min,max = tp.range()
     array = []
-    global queue
+    global queue, res
     for i in range(min,max+1):
         temp_varr = varr[i]
         temp_tp = temp_varr.type
         temp_varr, temp_tp = pointer_handler(temp_varr, temp_tp)
         if temp_varr is None:
-            array.append("NULL 0x0")
+            array.append([res["types"]["NULL"], "0x0"])
         else:
-            queue.append(("["+str(i)+"]",temp_varr))
-            temp = str(temp_tp)+" "+str(temp_varr.address).split(" ")[0]
+            if str(temp_tp) not in res["types"]:
+                res["types"][str(temp_tp)] = len(res["varr"])
+                res["varr"].append(dict())
+            temp = [
+                res["types"][str(temp_tp)],
+                str(temp_varr.address).split(" ")[0]
+            ]
             array.append(temp)
+            queue.append(("["+str(i)+"]",temp_varr))
     return array
 
 def struct_handler(varr, tp):
     fields = tp.fields()
     struct = dict()
-    global queue
+    global queue, res
     for key in fields:
         temp_varr = varr[key]
         temp_tp = temp_varr.type
         temp_varr, temp_tp = pointer_handler(temp_varr, temp_tp)
         if temp_varr is None:
-            struct[key.name] = "NULL 0x0"
+            struct[key.name] = [res["types"]["NULL"], "0x0"]
         else:
-            struct[key.name] = str(temp_tp)+" "+str(temp_varr.address).split(" ")[0]
+            if str(temp_tp) not in res["types"]:
+                res["types"][str(temp_tp)] = len(res["varr"])
+                res["varr"].append(dict())
+            struct[key.name] = [
+                res["types"][str(temp_tp)],
+                str(temp_varr.address).split(" ")[0]
+            ]
             queue.append((key.name,temp_varr))
     return struct
 
 def add_varr(varr):
-    global queue
+    global queue, res
     tp = varr.type
     varr, tp = pointer_handler(varr, tp)
     if varr is None:
@@ -62,15 +75,24 @@ def add_varr(varr):
                 basename = match.group(1)
                 if basename in supported_handlers:
                     handler =  supported_handlers[basename](basename,varr)
-                    res = []
+                    container = []
                     if hasattr(handler, 'display_hint'):
                         if handler.display_hint() == "string":
                             return handler.to_string()
                     for child in handler.children():
                         temp_varr, temp_tp = pointer_handler(child[1],child[1].type)
-                        queue.append((child[0],temp_varr))
-                        res.append(str(temp_tp)+" "+str(temp_varr.address).split(" ")[0])
-                    return res
+                        if temp_varr is None:
+                            break
+                        else:
+                            if str(temp_tp) not in res["types"]:
+                                res["types"][str(temp_tp)] = len(res["varr"])
+                                res["varr"].append(dict())
+                            container.append([
+                                res["types"][str(temp_tp)],
+                                str(temp_varr.address).split(" ")[0]
+                            ])
+                            queue.append((child[0],temp_varr))
+                    return container
 
         if tp.code == gdb.TYPE_CODE_ARRAY:
             return array_handler(varr, tp)
@@ -103,13 +125,21 @@ def get_blocks(frame):
 def get_data():
     frame = gdb.newest_frame()
     blocks = get_blocks(frame)
-    global queue
+    global queue, res
     queue = []
     res = {
-        "NULL 0x0" : {
-            "name": "nullptr",
-            "value": None
-        }
+        "binary" : gdb.inferiors()[0].progspace.filename.split("/")[-1],
+        "types" : {
+            "NULL" : 0,
+        },
+        "varr" : [
+            {
+                "0x0" : [
+                    "nullptr",
+                    None
+                ]
+            }
+        ]
     }
     for block in blocks:
         for key in block:
@@ -118,15 +148,19 @@ def get_data():
         try:
             name,varr = queue[0]
             tp = varr.type
-            type_addr = str(tp)+" "+str(varr.address).split(" ")[0]
-            if type_addr not in res.keys():
-                res[type_addr] = {
-                    'name': name,
-                    'value': add_varr(varr)
-                }
+            addr = str(varr.address).split(" ")[0]
+
+            if str(tp) not in res["types"].keys():
+                res["types"][str(tp)] = len(res["varr"])
+                res["varr"].append(dict())
+            
+            if addr not in res["varr"][res["types"][str(tp)]]:
+                res["varr"][res["types"][str(tp)]][addr] = [
+                    name,
+                    add_varr(varr)
+                ]
             queue.pop(0)
-        except error as e:
-            # print("gdb.MemoryError: ",e)
+        except:
             queue.pop(0)
             print(traceback.format_exc())
             continue
