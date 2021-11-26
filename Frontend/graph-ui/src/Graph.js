@@ -6,7 +6,7 @@ import axios from 'axios'
 import { render } from "@testing-library/react";
 import Form2 from './from2'
 import { v4 as uuidv4 } from 'uuid'
-
+import './graph_style.css'
 
 
 
@@ -210,9 +210,9 @@ const MyGraph = () => {
   return (
       
     
-        <div>
-        <div className="container">  
-        <Form2/>   
+        <div className="row">
+        <Form2/>
+        <div className="main">
         <h1> Node Info </h1>  
         
         
@@ -250,11 +250,11 @@ const MyGraph = () => {
         
         <InpForm/>
 
-    </div>
+
     
    
-     <div>
-     <Graph graph={graph} options={options} events={events} style={{ height: "640px" }} />
+
+     <Graph graph={graph} options={options} events={events} style={{ height: "70vh" }} />
      </div> 
      </div> 
       
