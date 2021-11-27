@@ -17,15 +17,17 @@ class Node{
             data4 = f;
             data5 = b;
             data6 = s;
+            data7 = make_pair(i*1000, i*1000+3000);
+            data8 = make_tuple(i+100,c,b);
         }
         
         //Adding neighbours
-        void addNeighbour(Node *neighbour){
+        void addNeighbour(shared_ptr<Node> neighbour){
             neighbours.insert(neighbour);
         };
 
         // set of elements containing pointers to the neighbours of the node
-        set<Node*> neighbours;
+        set<shared_ptr<Node>> neighbours;
 
         //Data stored in the node
         int data1;
@@ -34,11 +36,13 @@ class Node{
         float data4;
         bool data5;
         string data6;
+        pair<long long, long long> data7;
+        tuple<int, char, bool> data8;
 };
 
 class Graph{
     public:
-        set<Node*> nodes;
+        set<shared_ptr<Node>> nodes;
 
         Graph(){}
 };
@@ -54,12 +58,12 @@ int main(/*int argc, char const *argv[]*/){
     //Adding the nodes
     for(int i=0;i<n;i++){
         //any data can be stored in the nodes
-        graph.nodes.insert(new Node(i*2,97+i,colour(i%3),(float)i/10,i%2,"index->"+to_string(i)));
+        graph.nodes.insert(shared_ptr<Node>(new Node(i*2,97+i,colour(i%3),(float)i/10,i%2,"index->"+to_string(i))));
     }
 
     // Adding the Edges
     for(auto it=graph.nodes.begin();it!=graph.nodes.end();it++){
-        set<Node*>::iterator jt;
+        set<shared_ptr<Node>>::iterator jt;
         if(it!=--graph.nodes.end()){
             jt = it; jt++;
         }

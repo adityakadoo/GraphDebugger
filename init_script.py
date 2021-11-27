@@ -25,7 +25,7 @@ def start_django_server():
     django_server = sp.Popen("python3 /"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger/manage.py runserver",stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.PIPE,shell=True,preexec_fn=os.setsid)
 
 class Run_server(gdb.Command):
-    """Command to start Django and React servers"""
+    """Command to start GraphDebugger servers"""
 
     def __init__(self) -> None:
         super(Run_server, self).__init__("run-server", gdb.COMMAND_SUPPORT)
@@ -42,7 +42,7 @@ class Run_server(gdb.Command):
         react_thread.start()
 
 class Close_server(gdb.Command):
-    """Command to stop Django and React servers"""
+    """Command to stop GraphDebugger servers"""
 
     def __init__(self) -> None:
         super(Close_server, self).__init__("close-server", gdb.COMMAND_SUPPORT)
@@ -60,6 +60,16 @@ class Close_server(gdb.Command):
             django_thread.join()
             django_thread = None
 
+class Free_server(gdb.Command):
+    """Frees up localhost:8000 and localhost:3000 for using GraphDebugger"""
+
+    def __init__(self) -> None:
+        super(Free_server, self).__init__("free-server", gdb.COMMAND_SUPPORT)
+
+    def invoke(self, arg, from_tty):
+        sp.Popen("kill -9 $(lsof -t -i:3000)",stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.PIPE,shell=True)
+        sp.Popen("kill -9 $(lsof -t -i:8000)",stdin=sp.PIPE,stdout=sp.PIPE,stderr=sp.PIPE,shell=True)
+
 def send_request(event):
     data = get_data()
     try:    
@@ -75,6 +85,7 @@ def send_request(event):
 
 Run_server()
 Close_server()
+Free_server()
 
 gdb.events.stop.connect(send_request)
 
