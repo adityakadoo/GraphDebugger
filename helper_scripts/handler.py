@@ -8,10 +8,16 @@ queue = None
 res = {}
 
 def pointer_handler(varr, tp):
-    while tp.code == gdb.TYPE_CODE_PTR:
+    basename = get_basename(tp)
+    while tp.code == gdb.TYPE_CODE_PTR or basename == 'std::shared_ptr':
         try:
-            varr = varr.dereference()
-            tp = varr.type
+            if tp.code == gdb.TYPE_CODE_PTR:
+                varr = varr.dereference()
+                tp = varr.type
+            else:
+                varr = varr['_M_ptr'].dereference().cast(tp.template_argument(0))
+                tp = tp.template_argument(0)
+            basename = get_basename(tp)
         except gdb.MemoryError as e:
             return None,tp
     return varr,tp
@@ -67,32 +73,27 @@ def add_varr(varr):
         return None
 
     try:
-        tag = get_basic_type(tp)
-        if tag is not None:
-            compiled_rx = re.compile('^([a-zA-Z0-9_:]+)(<.*>)?$')
-            match = compiled_rx.match(tag)
-            if match is not None:
-                basename = match.group(1)
-                if basename in supported_handlers:
-                    handler =  supported_handlers[basename](basename,varr)
-                    container = []
-                    if hasattr(handler, 'display_hint'):
-                        if handler.display_hint() == "string":
-                            return handler.to_string()
-                    for child in handler.children():
-                        temp_varr, temp_tp = pointer_handler(child[1],child[1].type)
-                        if temp_varr is None:
-                            break
-                        else:
-                            if str(temp_tp) not in res["types"]:
-                                res["types"][str(temp_tp)] = len(res["varr"])
-                                res["varr"].append(dict())
-                            container.append([
-                                res["types"][str(temp_tp)],
-                                str(temp_varr.address).split(" ")[0]
-                            ])
-                            queue.append((child[0],temp_varr))
-                    return container
+        basename = get_basename(tp)
+        if basename in supported_handlers:
+            handler =  supported_handlers[basename](basename,varr)
+            container = []
+            if hasattr(handler, 'display_hint'):
+                if handler.display_hint() == "string":
+                    return handler.to_string()
+            for child in handler.children():
+                temp_varr, temp_tp = pointer_handler(child[1],child[1].type)
+                if temp_varr is None:
+                    break
+                else:
+                    if str(temp_tp) not in res["types"]:
+                        res["types"][str(temp_tp)] = len(res["varr"])
+                        res["varr"].append(dict())
+                    container.append([
+                        res["types"][str(temp_tp)],
+                        str(temp_varr.address).split(" ")[0]
+                    ])
+                    queue.append((child[0],temp_varr))
+            return container
 
         if tp.code == gdb.TYPE_CODE_ARRAY:
             return array_handler(varr, tp)
@@ -113,6 +114,16 @@ def add_varr(varr):
     except gdb.MemoryError as e:
         # print(traceback.format_exc())
         return None
+
+def get_basename(tp):
+    basename = None
+    tag = get_basic_type(tp)
+    if tag is not None:
+        compiled_rx = re.compile('^([a-zA-Z0-9_:]+)(<.*>)?$')
+        match = compiled_rx.match(tag)
+        if match is not None:
+            basename = match.group(1)
+    return basename
 
 def get_blocks(frame):
     curr_block = frame.block()
@@ -143,7 +154,8 @@ def get_data():
     }
     for block in blocks:
         for key in block:
-            queue.append((key.name,key.value(frame)))
+            temp_varr, temp_tp = pointer_handler(key.value(frame),key.value(frame).type)
+            queue.append((key.name,temp_varr))
     while len(queue) != 0:
         try:
             name,varr = queue[0]
