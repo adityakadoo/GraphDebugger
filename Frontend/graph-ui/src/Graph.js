@@ -3,12 +3,17 @@ import React, { useState ,useRef, Component,createClass } from "react";
 import Graph from "react-graph-vis";
 
 import axios from 'axios'
-import { render } from "@testing-library/react";
+import { getByDisplayValue, render } from "@testing-library/react";
 import Form2 from './from2'
 import { v4 as uuidv4 } from 'uuid'
 //import { data } from "vis-network";
 import './graph_style.css'
-
+import { ConnectionLineType } from "react-flow-renderer";
+import ReactDOM from "react-dom";
+import { default as ReactSelect } from "react-select";
+import { components } from "react-select";
+import {Multiselect} from "multiselect-react-dropdown";
+import Select from "react-select";
 
 
 
@@ -23,13 +28,14 @@ var clusterNode = [];
 var count = 1;
 var nodedata = {"Select Node":""};
 let textInput;
-
+let node_feature_list=[]; 
 var labels = ['data1','data2'];
 var searchdata = {
   "data1": '12',
   
 }
 var high_color = "#FF7F7F";
+
 
 function randomColor() {
   const red = Math.floor(Math.random() * 256).toString(16).padStart(2, '0');
@@ -107,21 +113,11 @@ function handleClick3(data,event){
   // })
 }
 
-function InpForm() {
-  const [name, setName] = useState("");
-
-  return (
-    <form>
-      <label>Enter your name:
-        <input
-          type="text" 
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      </label>
-    </form>
-  )
+function handleclick4(data1,event) {
+  event.stopPropagation();
+  console.log("reaching");
 }
+
 
 function disp_data(Object,data,nodes){
   var selectdata={};
@@ -297,11 +293,16 @@ const MyGraph = () => {
       .then((res)=>{
         data=res.data
         console.log(data)
+        node_feature_list=[]
+        if(Object.keys(data.Nodedata[1])){
+          Object.entries(data.Nodedata[1]).map(([key1,value1]) =>node_feature_list.push(key1))
+        } 
         Mynode  = data.nodes;
         MyEdge = data.edge_list;
         nodedata = data.Nodedata;
       });
-      
+
+    
   const createNode = () => {
     axios.get( 'http://localhost:8000/gdb/graph/')
       .then((res)=>{
@@ -406,10 +407,10 @@ const MyGraph = () => {
         
         <div className="row">
         
-         
+        <div className="form-style">
         <Form2/>  
-        <div className="main">  
-        <h1> Node Info </h1>  
+        
+        <legend><span className="number">2</span> Node Info</legend>  
         
         
         {
@@ -423,7 +424,7 @@ const MyGraph = () => {
         // <h3 >{key} : {value}</h3> )
         
         } 
-        <h2> Create Group </h2>
+        <label> Create Group </label>
         {
           // Object.entries(clusterNode)
           // .map( ([key, value]) => 
@@ -453,15 +454,35 @@ const MyGraph = () => {
         }}
         > Destroy
         </button>
-        
-        
-        <InpForm/>
-        
-    
-    
-   
-     
-     <Graph graph={graph} options={options} events={events} style={{ height: "70vh" }} />
+        {/* <div>
+        <Example />
+        </div> */}
+
+            {/* <button 
+              onClick={(e)=>{
+                handleclick4(data,e);
+              }}>DISPLAY</button>  */}
+             <form>
+                <label className="name">Variable Names</label>
+                <Multiselect 
+                isObject={false}
+                id="mselect"
+                onSelect={(event)=>(
+                  labels=event,
+                  createNode()
+                  )}
+                 onRemove={(event)=>(
+                   labels=event,
+                   createNode()
+                 )}
+                 options={node_feature_list}
+                 />
+                 </form>
+                 </div>
+                 <div className="main"> 
+     <Graph graph={graph} options={options} events={events} style={{ height: "100%" }} />
+
+
      </div> 
      </div> 
       

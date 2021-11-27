@@ -16,23 +16,12 @@ class Form2 extends React.Component {
         edgelist: "",
         from: "",
         to: "",
-        edgemap: "",        
-        Nodefeatures:[{dataname:"",datatype:""}],
+        edgemap: "",
         done:true
     };
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleChangedatan(i,e){
-    let Nodefeatures = this.state.Nodefeatures;
-     Nodefeatures[i].dataname =e.target.value;
-    this.setState({Nodefeatures});
-  }
-  handleChangedatat(i,e){
-    let Nodefeatures = this.state.Nodefeatures;
-    Nodefeatures[i].datatype=e.target.value;
-    this.setState({Nodefeatures});
-  }
   handleChangelist(e){
     let format = this.state.format;
     format = e.target.value;
@@ -88,32 +77,15 @@ class Form2 extends React.Component {
     edgemap = e.target.value;
     this.setState({edgemap});
   }  
-  addFormFields() {
-    this.setState(({
-    Nodefeatures: [...this.state.Nodefeatures, { dataname: "", datatype: "" }]
-    }));
-  }
-  removeFormFields(i) {
-    let Nodefeatures = this.state.Nodefeatures;
-    Nodefeatures.splice(i, 1);
-    this.setState({  Nodefeatures });
-  }
   handleSubmit(event) {
     event.preventDefault();
     let done = false;
     this.setState({done});
     var dict = {};
     dict=this.state;
-    var new_node = this.state.Nodefeatures;
-    var node_dict = {};
-    for (var i=0; i < new_node.length; i++){
-      var a_dict = new_node[i];
-      node_dict[a_dict["dataname"]] = a_dict["datatype"];
-    }
-    dict["Nodefeatures"] = node_dict;
     console.log(dict);
 
-    	try {
+    try {
 	  // make axios post request
     const json = JSON.stringify(dict);
 	  const response = axios({
@@ -122,16 +94,16 @@ class Form2 extends React.Component {
 		data: json,
 		headers: { "Content-Type": "application/json" },
 	  });
-	} catch(error) {
+	  } catch(error) {
 	  console.log(error)
-	}
+	  }
   }
 
 
   render() {
     
     return (
-        <div className="form-style">
+        
         <form  onSubmit={this.handleSubmit}>
           <legend><span className="number">1</span> Graph</legend>
 
@@ -191,35 +163,12 @@ class Form2 extends React.Component {
 
         </div>
 
-
-        <legend><span className="number">2</span> Node Features</legend>
-          
-          {this.state.done && this.state.Nodefeatures.map((element, index) => (
-           
-           <div key={index}>
-              
-              {/* <label className="name1">Data Name</label> */}
-              <input type="text" className="form-inline" placeholder="Variable Name *" value={element.dataname || ""} onChange={e => this.handleChangedatan(index, e)} />
-              {/* <label className="name2">Data Type</label> */}
-              <input type="text" className="form-inline" placeholder="Variable Type *" value={element.datatype || ""} onChange={e => this.handleChangedatat(index, e)} />
-              {
-                index ? 
-                  <button className="buttonrem"  type="button"  onClick={() => this.removeFormFields(index)}>Remove</button> 
-                : null
-              }
-               
-            </div>
-
-          ))}
-
-
          <div className="button-section">
-              <button className="buttonadd" type="button" onClick={() => this.addFormFields()}>Add</button>
               <p><button className="buttonsubmit" type="submit">Submit</button></p>
          </div>
         
 
-      </form></div>
+      </form>
     );
 }
 }
