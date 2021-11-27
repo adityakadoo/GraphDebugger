@@ -76,6 +76,11 @@ class Form2 extends React.Component {
     let edgemap = this.state.edgemap;
     edgemap = e.target.value;
     this.setState({edgemap});
+  }
+  handleChangeDone(e){
+    let done = this.state.done;
+    done = true;
+    this.setState({done});
   }  
   handleSubmit(event) {
     event.preventDefault();
@@ -105,68 +110,75 @@ class Form2 extends React.Component {
     return (
         
         <form  onSubmit={this.handleSubmit}>
-          <legend><span className="number">1</span> Graph</legend>
-
+          
+          <legend onClick={e=>this.handleChangeDone(e)}><span className="number">1</span> Graph</legend>
+        
         <div> 
-
+        {this.state.done && (
             <label className="name">Graph formats:</label>
+        )}
+            {this.state.done && (
             <select value={this.state.format} onChange={e=>this.handleChangelist(e)}>
               <option value="Adj-List">Adj-List</option> 
               <option value="Edge-List">Edge-List</option> 
               <option value="Edge-Map">Edge-Map</option> 
             </select>
-
+            )}
+    
         {/* </div>
 
 
         <div className="form-inline"> */}
-
-            {/* <p><label className="name">Graph Class Name</label> */}
+            
+            
+            {this.state.done && (
             <input type="text" placeholder="Graph Class *" value={this.state.Graph ||""} onChange={e => this.handleChangeGraph(e)}/>
-            
-            {/* <p><label className="name">Graph Object Name</label> */}
+            )}
+            {this.state.done && (
             <input type="text" placeholder="Graph Instance *" value={this.state.graph ||""} onChange={e => this.handleChangeGraphobj(e)}/>
-            
-            {/* <p><label className="name">Node Class Name</label> */}
+            )}
+            {this.state.done && (
             <input type="text" placeholder="Node Class *" value={this.state.Node ||""} onChange={e => this.handleChangeNode(e)}/>
-            
-            {/* <p><label className="name">Nodelist Name</label> */}
+            )}
+            {this.state.done && (
             <input type="text" placeholder="Container for Nodes *" value={this.state.nodelist ||""} onChange={e => this.handleChangenodelist(e)}/>
-            
+            )}
         {/* </div>  
 
 
 
         <div className="form-inline"> */}
 
-          {this.state.format==="Adj-List" && (
+          {this.state.done && this.state.format==="Adj-List" && (
             <input type="text" placeholder="Container for Adjacent Nodes *" value={this.state.neighbours ||""} onChange={e => this.handleChangeneighbours(e)}/>
           )}
-          {this.state.format==="Edge-List" && (
+          {this.state.done && this.state.format==="Edge-List" && (
             <input type="text" placeholder="Edge Class *" value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/>           
           )}
-          {this.state.format==="Edge-Map" && (
+          {this.state.done && this.state.format==="Edge-Map" && (
             <input type="text" placeholder="Edge Class *" value={this.state.Edge ||""} onChange={e => this.handleChangeedge(e)}/>
           )}          
-          {this.state.format==="Edge-List" && (
+          {this.state.done && this.state.format==="Edge-List" && (
             <input type="text" placeholder="Container for Edges *" value={this.state.edgelist ||""} onChange={e => this.handleChangeedgelist(e)}/>
           )}
-          {this.state.format==="Edge-List" && (
+          {this.state.done && this.state.format==="Edge-List" && (
             <input type="text" placeholder="Source Node *" value={this.state.from ||""} onChange={e => this.handleChangefrom(e)}/>
           )}
-          {this.state.format==="Edge-List" && (
+          {this.state.done && this.state.format==="Edge-List" && (
             <input type="text" placeholder="Target Node *" value={this.state.to ||""} onChange={e => this.handleChangeto(e)}/>
           )}
-          {this.state.format==="Edge-Map" && (
+          {this.state.done && this.state.format==="Edge-Map" && (
             <input type="text" placeholder="Map of Edges *" value={this.state.edgemap ||""} onChange={e => this.handleChangeedgemap(e)}/>
           )}  
 
         </div>
 
          <div className="button-section">
+          {this.state.done && (
               <p><button className="buttonsubmit" type="submit">Submit</button></p>
+          )}
          </div>
-        
+
 
       </form>
     );

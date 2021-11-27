@@ -29,11 +29,12 @@ var count = 1;
 var nodedata = {"Select Node":""};
 let textInput;
 let node_feature_list=[]; 
-var labels = ['data1','data2'];
+var labels = [];
 var searchdata = {
-  "data1": '12',
+  "data1": '12'
   
 }
+var searchdata1 = {}
 var high_color = "#FF7F7F";
 
 
@@ -92,6 +93,7 @@ function handleClick2(Object,event){
   destroy(Object);
 }
 
+
 function handleClick3(data,event){
   event.stopPropagation();
   console.log(data.Nodedata);
@@ -117,7 +119,45 @@ function handleclick4(data1,event) {
   event.stopPropagation();
   console.log("reaching");
 }
-
+function handleChangedatan(i,e){
+  console.log("reached")
+  var dictg
+  Object.keys(searchdata1).map(function(key,index){
+    console.log(index)
+    console.log(key)
+    console.log(searchdata1[key])
+    console.log("done")
+  })
+Object.entries(searchdata1).map(function(key,value){
+  console.log(value)
+  console.log(key)
+})
+  searchdata1[i]=e.target.value;
+}
+function handleChangedatat(i,e){
+  searchdata1[searchdata1[i]]=e.target.value;
+}
+function handleadd(data,event){
+  event.stopPropagation();
+  console.log("reached")
+  var x=document.getElementById("txt_1").value;
+  var y=document.getElementById("txt_2").value;
+  searchdata1[x]=y;
+  document.getElementById("txt_1").value="";
+  console.log(x)
+  document.getElementById("txt_2").value="";
+  console.log(y)
+  console.log(searchdata1);
+}
+function handlerevert(data,event){
+  event.stopPropagation();
+  searchdata1={};
+}
+function handlesubmit(data,event){
+  event.stopPropagation();
+  searchdata=searchdata1;
+  searchdata1={};
+}
 
 function disp_data(Object,data,nodes){
   var selectdata={};
@@ -278,7 +318,7 @@ const options = {
   nodes:{
     shape:'box',
   },
-  height: "500px"
+
 };
 
 
@@ -299,7 +339,6 @@ const MyGraph = () => {
         } 
         Mynode  = data.nodes;
         MyEdge = data.edge_list;
-        nodedata = data.Nodedata;
       });
 
     
@@ -316,14 +355,14 @@ const MyGraph = () => {
      
       Mynode  = data.nodes;
       MyEdge = data.edge_list;
-      nodedata = JSON.stringify(data.Nodedata);
       for(var i =0;i<Mynode.length;i++){
         var labelstr = '';
+        labelstr += "Node :" +Mynode[i].id + '\n';
         for(var j=0;j<labels.length;j++){
           labelstr += labels[j]+ ":" +  data.Nodedata[Mynode[i].id][labels[j]] + '\n';  
         }
         var found = true;
-        if(searchdata.lenght == 0) found = false;
+        if(searchdata.length == 0) found = false;
         if(found){
         for (const [key, value] of Object.entries(searchdata)) {
           if(data.Nodedata[Mynode[i].id][key] != value){
@@ -332,6 +371,7 @@ const MyGraph = () => {
           }
         }
         }
+        Mynode[i].color='#ADD8E6';
         if(found){
           Mynode[i].color = high_color;
         }
@@ -419,12 +459,12 @@ const MyGraph = () => {
 
 
 
-        // Object.entries(nodedata)
-        // .map( ([key, value]) => 
-        // <h3 >{key} : {value}</h3> )
+        Object.entries(nodedata)
+        .map( ([key, value]) => 
+        <h3 >{key} : {value}</h3> )
         
         } 
-        <label> Create Group </label>
+        <legend><span className="number">3</span> Clustering</legend>
         {
           // Object.entries(clusterNode)
           // .map( ([key, value]) => 
@@ -433,13 +473,7 @@ const MyGraph = () => {
           // <h3 >{value} : {key1}</h3> ))
         }
 
-        <button 
-          onClick={(e) => {
-            console.log("3");
-          handleClick3(data,e);
-        }}
-        > Test
-        </button>
+
 
         <button 
           onClick={(e) => {
@@ -462,6 +496,7 @@ const MyGraph = () => {
               onClick={(e)=>{
                 handleclick4(data,e);
               }}>DISPLAY</button>  */}
+              <legend><span className="number">4</span> Labelling</legend>
              <form>
                 <label className="name">Variable Names</label>
                 <Multiselect 
@@ -478,9 +513,32 @@ const MyGraph = () => {
                  options={node_feature_list}
                  />
                  </form>
+
+            <form>      
+                 <legend><span className="number">5</span> Highlight Nodes</legend>
+        {/* <label className="name">Variable Name</label> */}
+        
+        <input type="text" placeholder="Query Variable *" id="txt_1" />
+        
+        {/* <label className="name">Variable Value</label> */}
+        
+        <input type="text" placeholder="Query Value *" id="txt_2" />
+     
+        
+        <p><button   onClick={e=>{handleadd(data,e)}}>Add</button></p>
+       
+        
+        <p><button   onClick={e=>{handlerevert(data,e)}}>Revert</button></p>
+       
+        
+        <p><button   onClick={e=>(handlesubmit(data,e),createNode())}>Submit</button></p>
+        
+        </form>
+
+
                  </div>
                  <div className="main"> 
-     <Graph graph={graph} options={options} events={events} style={{ height: "100%" }} />
+     <Graph graph={graph} options={options} events={events} style={{ height: "100vh" }} />
 
 
      </div> 
