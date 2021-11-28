@@ -109,48 +109,37 @@ function handleClick3(data, event) {
   // })
 }
 
-function handleclick4(data1, event) {
-  event.stopPropagation();
-  console.log("reaching");
-}
-function handleChangedatan(i, e) {
-  console.log("reached")
-  var dictg
-  Object.keys(searchdata1).map(function (key, index) {
-    console.log(index)
-    console.log(key)
-    console.log(searchdata1[key])
-    console.log("done")
-  })
-  Object.entries(searchdata1).map(function (key, value) {
-    console.log(value)
-    console.log(key)
-  })
-  searchdata1[i] = e.target.value;
-}
-function handleChangedatat(i, e) {
-  searchdata1[searchdata1[i]] = e.target.value;
-}
+
+
 function handleadd(data, event) {
   event.stopPropagation();
-  console.log("reached")
   var x = document.getElementById("txt_1").value;
   var y = document.getElementById("txt_2").value;
   searchdata1[x] = y;
   document.getElementById("txt_1").value = "";
-  console.log(x)
   document.getElementById("txt_2").value = "";
-  console.log(y)
-  console.log(searchdata1);
+  var displaycond = ""
+  Object.entries(searchdata1).map(function (key, value) {
+    displaycond += key[0] + " : " + searchdata1[key[0]] + "\n"
+  })
+  document.querySelector(".displayc").innerHTML = "<pre>" + displaycond + "</pre>"
 }
 function handlerevert(data, event) {
   event.stopPropagation();
   searchdata1 = {};
+  searchdata = searchdata1;
+  var displaycond = ""
+  document.querySelector(".displayc").innerHTML = "<pre>" + displaycond + "</pre>"
 }
 function handlesubmit(data, event) {
   event.stopPropagation();
   searchdata = searchdata1;
-  searchdata1 = {};
+  var displaycond1 = "Highlighting Nodes with" + "\n"+"Above Conditon(s)" + "\n"
+  var displaycond = ""
+  Object.entries(searchdata1).map(function (key, value) {
+    displaycond += key[0] + " : " + searchdata1[key[0]] + "\n"
+  })
+  document.querySelector(".displayc").innerHTML = "<pre>"  +displaycond + displaycond1 + "</pre>"
 }
 
 function disp_data(Object, data, nodes) {
@@ -501,10 +490,13 @@ const MyGraph = () => {
               <button onClick={e => { handleadd(data, e) }}>Add</button>
             </div>
             <div className="buttonbox">
-              <button onClick={e => { handlerevert(data, e) }}>Revert</button>
+              <button onClick={e => (handlerevert(data, e), createNode1())}>Revert</button>
             </div>
           </div>
-
+          <div className="nodeinfo">
+          Condition(s):
+        <p class="displayc"></p>
+        </div>
           <button onClick={e => (handlesubmit(data, e), createNode1())}>Highlight</button>
         </div>
       </div>
