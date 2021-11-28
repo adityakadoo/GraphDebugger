@@ -38,28 +38,38 @@ class graphview(View):
         res['nodes']=[]
         res['Nodedata']=dict()
         node_id=dict()
-        for i in range(len(node_list)):
-            node=g['varr'][node_list[i][0]][node_list[i][1]]
-            node_id[node_list[i][1]]=i+1
-            node_dict={
-                'id':i+1,
-                'label': node[0]
-            }
-            res['nodes'].append(node_dict)
-            feature_dict=dict()
-            for feature in node[1]:
-                temp_feature=g['varr'][node[1][feature][0]][node[1][feature][1]][1]
-                if type(temp_feature)==list:
-                    temp_dict = dict()
-                    for elem in temp_feature:
-                        sub_feature = g['varr'][elem[0]][elem[1]]
-                        if type(sub_feature[1])!=list and type(sub_feature[1])!=dict:
-                            temp_dict[sub_feature[0]] = sub_feature[1]
-                    if len(temp_dict) != 0:
-                        feature_dict[feature]=str(temp_dict)
-                elif type(temp_feature)!=dict: 
-                    feature_dict[feature]=str(temp_feature)
-            res['Nodedata'][i+1]=feature_dict
+        try:
+            for i in range(len(node_list)):
+                node_type=None
+                for type_name in g['types'].keys():
+                    if g['types'][type_name] == node_list[i][0]:
+                        node_type=type_name
+                        break
+                if node_type != c['Node']:
+                    continue
+                node=g['varr'][node_list[i][0]][node_list[i][1]]
+                node_id[node_list[i][1]]=i+1
+                node_dict={
+                    'id':i+1,
+                    'label': node[0]
+                }
+                res['nodes'].append(node_dict)
+                feature_dict=dict()
+                for feature in node[1]:
+                    temp_feature=g['varr'][node[1][feature][0]][node[1][feature][1]][1]
+                    if type(temp_feature)==list:
+                        temp_dict = dict()
+                        for elem in temp_feature:
+                            sub_feature = g['varr'][elem[0]][elem[1]]
+                            if type(sub_feature[1])!=list and type(sub_feature[1])!=dict:
+                                temp_dict[sub_feature[0]] = sub_feature[1]
+                        if len(temp_dict) != 0:
+                            feature_dict[feature]=str(temp_dict)
+                    elif type(temp_feature)!=dict: 
+                        feature_dict[feature]=str(temp_feature)
+                res['Nodedata'][i+1]=feature_dict
+        except TypeError :
+            pass
         return res,node_id
 
     @staticmethod
@@ -90,6 +100,13 @@ class graphview(View):
         res, node_id = graphview.get_node_data(c, g, node_list)
         res['edge_list']=[]
         for nodeptr in node_list :
+            node_type=None
+            for type_name in g['types'].keys():
+                if g['types'][type_name] == nodeptr[0]:
+                    node_type=type_name
+                    break
+            if node_type != c['Node']:  
+                continue
             node=g['varr'][nodeptr[0]][nodeptr[1]]
             for neighbour in g['varr'][node[1][c['neighbours']][0]][node[1][c['neighbours']][1]][1]:
                 if neighbour in node_list:
@@ -133,6 +150,13 @@ class graphview(View):
 
         res['edge_list']=[]
         for edgeptr in edge_list:
+            edge_type=None
+            for type_name in g['types'].keys():
+                if g['types'][type_name] == edgeptr[0]:
+                    edge_type=type_name
+                    break
+            if edge_type != c['Edge']:
+                continue
             edge = g['varr'][edgeptr[0]][edgeptr[1]]
             temp_edge={
                 'from':node_id[edge[1][c['from']][1]],

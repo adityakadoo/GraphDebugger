@@ -23,12 +23,12 @@ class CFGBlock{
         }
         
         //Adding children
-        void addNeighbour(shared_ptr <CFGBlock> neighbour){
-            children.insert(neighbour);
-        };
+        // void addNeighbour(shared_ptr <CFGBlock> neighbour){
+        //     children.insert(neighbour);
+        // };
 
         // set of elements containing pointers to the children of the node
-        set<shared_ptr <CFGBlock>> children;
+        // set<shared_ptr <CFGBlock>> children;
 
         //Data stored in the node
         int data1;
@@ -61,7 +61,7 @@ class CCPGBlock{
         };
 
         // set of elements containing pointers to the children of the node
-        map<shared_ptr <CCPGBlock>,EdgeColor> children;
+        map<shared_ptr<CCPGBlock>,EdgeColor> children;
 
         //Data stored in the node
         int data1;
@@ -77,8 +77,8 @@ class CCPGBlock{
 class BlockifiedCCPG{
     public:
         // set<shared_ptr<CCPGBlock>> nodes;
-        map<pair<int,int>,shared_ptr<CCPGBlock>> nodes;
-        // set<shared_ptr<CFGBlock>> base_nodes;
+        map<int,shared_ptr<CCPGBlock>> nodes;
+        set<shared_ptr<CFGBlock>> base_nodes;
         BlockifiedCCPG(){}
 };
 
@@ -90,10 +90,10 @@ int main(/*int argc, char const *argv[]*/){
     //Number of CCPGBlocks
     int n = 8;
 
-    // for(int i=0;i<n;i++){
-    //     //any data can be stored in the nodes
-    //     graph.base_nodes.insert(shared_ptr <CFGBlock>(new CFGBlock(i*2,97+i,colour(i%3),(float)i/10,i%2,"index->"+to_string(i))));
-    // }
+    for(int i=0;i<n;i++){
+        //any data can be stored in the nodes
+        graph.base_nodes.insert(shared_ptr <CFGBlock>(new CFGBlock(i*2,97+i,colour(i%3),(float)i/10,i%2,"index->"+to_string(i))));
+    }
     //Adding the nodes
     for(int i=0;i<n;i++){
         //any data can be stored in the nodes
@@ -109,23 +109,29 @@ int main(/*int argc, char const *argv[]*/){
         // if(jt==graph.base_nodes.end()){
         //     jt=graph.base_nodes.begin();
         // }
-        graph.nodes[make_pair(i,i)]=(shared_ptr <CCPGBlock>(new CCPGBlock(i*3,97+2*i,colour((i+1)%3),(float)i/5,i%2,"index->"+to_string(i))));
+        graph.nodes[i]=(shared_ptr <CCPGBlock>(new CCPGBlock(i*3,97+2*i,colour((i+1)%3),(float)i/5,i%2,"index->"+to_string(i))));
     }
-    for(int i=0;i<n;i++){
-        graph.nodes[make_pair(i,i)]->children[graph.nodes[make_pair((i+1)%n,(i+1)%n)]]=(EdgeColor)(i%3);
-    }
+    // for(int i=0;i<n;i++){
+    //     graph.nodes[make_pair(i,i)]->children[graph.nodes[make_pair((i+1)%n,(i+1)%n)]]=(EdgeColor)(i%3);
+    // }
 
     // Adding the Edges
-    // for(auto it=graph.nodes.begin();it!=graph.nodes.end();it++){
-    //     map<pair<shared_ptr<CFGBlock>,shared_ptr<CFGBlock>>,shared_ptr<CCPGBlock>>::iterator jt;
-    //     if(it!=--graph.nodes.end()){
-    //         jt = it; jt++;
-    //     }
-    //     else{
-    //         jt = graph.nodes.begin();
-    //     }
-    //     (*it)->addNeighbour(*jt);
-    // }
+    for(int i=0;i<n;i++){
+        // map<pair<shared_ptr<CFGBlock>,shared_ptr<CFGBlock>>,shared_ptr<CCPGBlock>>::iterator jt;
+        // if(it!=--graph.nodes.end()){
+        //     jt = it; jt++;
+        // }
+        // else{
+        //     jt = graph.nodes.begin();
+        // }
+        // set<shared_ptr<CFGBlock>>::iterator jt;
+        // jt=it++;
+        // if(jt==graph.base_nodes.end()){
+        //     jt=graph.base_nodes.begin();
+        // }
+        graph.nodes[i]->addNeighbour(graph.nodes[(i+1)%n],(EdgeColor)(rand()%3));
+        // (*it)->addNeighbour(*jt);
+    }
 
     // graph.nodes[0]->addNeighbour(graph.nodes[1]);
     // graph.nodes[0]->addNeighbour(graph.nodes[2]);

@@ -164,7 +164,7 @@ function disp_data(Object, data, nodes) {
       }
       else {
         console.log("here")
-        grp_nodes += 'Node:' + temparray[i] + "\n";
+        grp_nodes += " [" + String(temparray[i] - 1) + "] ";
       }
     }
     tempdata = {
@@ -198,7 +198,7 @@ const MyGraph = () => {
       data = res.data
       //console.log(data)
       node_feature_list = [];
-      time_stamp = data.time_stamp;
+      // time_stamp = data.time_stamp;
       if(data.nodes.length == 0){
         alert("Empty Node list");
       }
@@ -269,10 +269,10 @@ const MyGraph = () => {
         data = res.data
         //console.log(data.Nodedata);
       });
-      if(time_stamp == data.time_stamp){
-        return;
-      }
-      time_stamp = data.time_stamp;
+      // if(time_stamp == data.time_stamp){
+      //   return;
+      // }
+      // time_stamp = data.time_stamp;
       if(data.nodes.length == 0){
         alert("Empty Node list");
       }
