@@ -180,7 +180,7 @@ function disp_data(Object, data, nodes) {
     }
     tempdata = {
       "Nodes": grp_nodes,
-      "Groups": grp_groups
+     
     };
     return tempdata;
     //return(Object.getNodesInCluster(nodes[0]));
@@ -200,17 +200,24 @@ function disp_data(Object, data, nodes) {
 const MyGraph = () => {
 
   let data;
+  let time_stamp = '0AD';
   //var Mynode  = [];
   var MyEdge = [];
 
   axios.get('http://localhost:8000/gdb/graph/')
     .then((res) => {
       data = res.data
-      console.log(data)
-      node_feature_list = []
-      if (Object.keys(data.Nodedata[1])) {
-        Object.entries(data.Nodedata[1]).map(([key1, value1]) => node_feature_list.push(key1))
+      //console.log(data)
+      node_feature_list = [];
+      time_stamp = data.time_stamp;
+      if(data.nodes.length == 0){
+        alert("Empty Node list");
       }
+      else{
+        if (Object.keys(data.Nodedata[1])) {
+          Object.entries(data.Nodedata[1]).map(([key1, value1]) => node_feature_list.push(key1))
+        }
+    }
       Mynode = data.nodes;
       MyEdge = data.edge_list;
     });
@@ -273,8 +280,14 @@ const MyGraph = () => {
         data = res.data
         //console.log(data.Nodedata);
       });
-
-    const color = randomColor();
+      if(time_stamp == data.time_stamp){
+        return;
+      }
+      time_stamp = data.time_stamp;
+      if(data.nodes.length == 0){
+        alert("Empty Node list");
+      }
+    //const color = randomColor();
     setState(({ graph: { nodes, edges }, counter, ...rest }) => {
       for (var k = 0; k < cluster_ids.length; k++) {
         //console.log(Object1);
