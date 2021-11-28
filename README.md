@@ -42,3 +42,9 @@
 - **Highlighting nodes** panel can be used to find/highlight nodes which obey the required properties mentioned by you.
 
 ---
+
+### Screenshot
+
+![webapp_screenshot](images/img1.png)
+
+---

@@ -715,9 +715,10 @@ class StdMapPrinter:
                 n = get_value_from_Rb_tree_node(n)
                 self.pair = n
                 item = n['first']
+                result = ('[key-%d]' % int(self.count/2), item)
             else:
                 item = self.pair['second']
-            result = ('[%d]' % self.count, item)
+                result = ('[val-%d]' % int(self.count/2), item)
             self.count = self.count + 1
             return result
 

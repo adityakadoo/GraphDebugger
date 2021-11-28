@@ -124,7 +124,7 @@ const options = {
       y: 5
     },
     smooth: {
-      enabled: true,
+      enabled: false,
       type: "dynamic",
       roundness: 0.5
     },

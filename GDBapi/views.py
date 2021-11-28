@@ -20,14 +20,20 @@ class graphview(View):
         c=graph.config
         g=graph.data
         res={
+            'nodes':[],
+            'Nodedata':dict(),
+            'edge_list':[],
             'time_stamp':g['time_stamp']
         }
-        if c['format'] == 'Adj-List':
-            res = self.adj_list_format(c, g)
-        elif c['format'] == 'Edge-List':
-            res = self.edge_list_format(c,g)
-        elif c['format'] == "Edge-Map":
-            res=self.edge_map_format(c,g)
+        try:
+            if c['format'] == 'Adj-List':
+                res = self.adj_list_format(c, g)
+            elif c['format'] == 'Edge-List':
+                res = self.edge_list_format(c,g)
+            elif c['format'] == "Edge-Map":
+                res=self.edge_map_format(c,g)
+        except:
+            pass
         return JsonResponse(res)
     
     @staticmethod
@@ -38,6 +44,7 @@ class graphview(View):
         res['nodes']=[]
         res['Nodedata']=dict()
         node_id=dict()
+        count = 1
         try:
             for i in range(len(node_list)):
                 node_type=None
@@ -48,9 +55,9 @@ class graphview(View):
                 if node_type != c['Node']:
                     continue
                 node=g['varr'][node_list[i][0]][node_list[i][1]]
-                node_id[node_list[i][1]]=i+1
+                node_id[node_list[i][1]]=count
                 node_dict={
-                    'id':i+1,
+                    'id':count,
                     'label': node[0]
                 }
                 res['nodes'].append(node_dict)
@@ -67,7 +74,8 @@ class graphview(View):
                             feature_dict[feature]=str(temp_dict)
                     elif type(temp_feature)!=dict: 
                         feature_dict[feature]=str(temp_feature)
-                res['Nodedata'][i+1]=feature_dict
+                res['Nodedata'][count]=feature_dict
+                count += 1
         except TypeError :
             pass
         return res,node_id

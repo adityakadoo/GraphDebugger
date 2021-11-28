@@ -183,7 +183,7 @@ const MyGraph = () => {
       node_feature_list = [];
       // time_stamp = data.time_stamp;
       if(data.nodes.length == 0){
-        alert("Empty Node list");
+        // alert("Empty Node list");
       }
       else{
         if (Object.keys(data.Nodedata[1])) {
