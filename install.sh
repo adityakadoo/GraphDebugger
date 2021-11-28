@@ -1,8 +1,12 @@
 #!/bin/bash
+
+# installing necessary libraries
 pip install -r requirements.txt
 cd Frontend/graph-ui/ 
-npm install package
+npm install
 cd ../../
+
+# configuring gdb-graph executable
 touch /bin/gdb-graph
 echo '#!/bin/sh
 exec gdb -q -ex init-graph "$@"' > /bin/gdb-graph
