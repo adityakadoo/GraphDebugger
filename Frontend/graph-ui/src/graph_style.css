@@ -1,0 +1,24 @@
+
+/* Column container */
+.row {  
+    display: flex;
+    /* flex-wrap: wrap; */
+    flex-direction: row;
+      height: 100vh;
+  }
+  
+  /* Create two unequal columns that sits next to each other */
+  /* Sidebar/left column */
+  .side {
+    flex: 23%;
+    background-color: #f1f1f1;
+    padding: 20px;
+  }
+  
+  /* Main column */
+  .main {
+    flex: 77%;
+    background-color: white;
+    padding: 20px;
+      overflow-y: scroll;
+  }

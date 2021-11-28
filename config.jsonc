@@ -1,16 +1,41 @@
 {
-    "format": "Adj-List",
-    "Graph": "Graph",
-    "graph": "graph",
-    "Node": "Node",
-    "Nodefeatures": {
-        "data1": "int",
-        "data2": "char",
-        "data4": "float",
-        "data5": "bool"
+    "Adj-List": {
+        "Graph": "Graph",
+        "graph": "graph",
+        "Node": "Node",
+        "nodelist": "nodes",
+        "neighbours": "neighbours"
     },
-    "Edge": null,
-    "Edgefeatures": {},
-    "nodelist":"nodes",
-    "neighbours":"neighbours"
+    "Edge-List": {
+        "Graph": "Graph",
+        "graph": "graph",
+        "Node": "Node",
+        "nodelist": "nodes",
+        "Edge": "Edge",
+        "edgelist": "edges",
+        "from": "Node1",
+        "to": "Node2"
+    },
+    "Edge-Map": {
+        "Graph": "Graph",
+        "graph": "graph",
+        "Node": "Node",
+        "Edge": "Edge",
+        "edgemap": "edge_map",
+        "nodelist": "nodes"
+    },
+    "STL Containers": [
+        "C-style array",
+        "vector",
+        "list",
+        "array",
+        "deque",
+        "set",
+        "map"
+    ],
+    "STL Extra Stuff": [
+        "pair",
+        "tuple",
+        "string"
+    ]
 }
