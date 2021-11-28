@@ -8,9 +8,11 @@ import { Multiselect } from "multiselect-react-dropdown";
 import options from "./GraphOptions";
 
 
-const api = axios.create({
-  baseURL: 'http://localhost:8000/gdb/graph/'
-})
+
+
+
+
+
 
 //global variables
 var Mynode = [];
@@ -88,26 +90,7 @@ function handleClick2(Object, event) {
 }
 
 
-function handleClick3(data, event) {
-  event.stopPropagation();
-  console.log(data.Nodedata);
-  // data.Nodedata.forEach(item=>{
 
-  //   item.members.map((member)=>{
-
-  //     if(member.location&&member.location[0]){
-
-  //       //Do whatever, maybe you want to use return statement in there
-  //       console.log(member.location)
-  //     }
-  //     else{
-
-  //       //do something else, or add more conditions
-  //       console.log("There's no location in it")
-  //     }
-  //   })
-  // })
-}
 
 
 
@@ -192,7 +175,7 @@ const MyGraph = () => {
   let time_stamp = '0AD';
   //var Mynode  = [];
   var MyEdge = [];
-
+  
   axios.get('http://localhost:8000/gdb/graph/')
     .then((res) => {
       data = res.data
@@ -263,17 +246,17 @@ const MyGraph = () => {
   }
 
   const createNode = (Object1) => {
-
+    
+    //data = getdata('http://localhost:8000/gdb/graph/');
+    console.log("2",data);
     axios.get('http://localhost:8000/gdb/graph/')
       .then((res) => {
-        data = res.data
+        data = res.data;
+        console.log("1",data);
         //console.log(data.Nodedata);
-      });
-      // if(time_stamp == data.time_stamp){
-      //   return;
-      // }
-      // time_stamp = data.time_stamp;
-      if(data.nodes.length == 0){
+      }).finally((res)=>{
+       //console.log('fdone');
+       if(data.nodes.length == 0){
         alert("Empty Node list");
       }
     //const color = randomColor();
@@ -286,6 +269,8 @@ const MyGraph = () => {
 
       Mynode = data.nodes;
       MyEdge = data.edge_list;
+      console.log(Mynode,MyEdge);
+
       for (var i = 0; i < Mynode.length; i++) {
         var labelstr = '';
         labelstr += Mynode[i].label + "\n";
@@ -309,6 +294,7 @@ const MyGraph = () => {
         //console.log(data.Nodedata[1] , labelstr);
         Mynode[i].label = labelstr;
       }
+      ;
       return {
 
         graph: {
@@ -319,6 +305,10 @@ const MyGraph = () => {
         ...rest
       }
     });
+      });
+      
+    
+      
   }
 
 
