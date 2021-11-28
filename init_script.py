@@ -4,6 +4,7 @@ import json
 import requests
 from threading import Thread, _active
 import sys,os,signal
+from datetime import datetime
 
 current_loc=os.path.realpath(__file__).split("/")
 sys.path.append("/"+current_loc[1]+"/"+current_loc[2]+"/GraphDebugger")
@@ -72,6 +73,7 @@ class Free_server(gdb.Command):
 
 def send_request(event):
     data = get_data()
+    data['time_stamp']=str(datetime.now())
     try:    
         response = requests.post("http://localhost:8000/gdb/graph/",
                 data=json.dumps(data,indent=0),

@@ -19,6 +19,9 @@ class graphview(View):
         graph,created=Graph.objects.get_or_create(name="GRAPH_1")
         c=graph.config
         g=graph.data
+        res={
+            'time_stamp':g['time_stamp']
+        }
         if c['format'] == 'Adj-List':
             res = self.adj_list_format(c, g)
         elif c['format'] == 'Edge-List':
@@ -29,7 +32,9 @@ class graphview(View):
     
     @staticmethod
     def get_node_data(c, g, node_list):
-        res=dict()
+        res={
+            'time_stamp':g['time_stamp']
+        }
         res['nodes']=[]
         res['Nodedata']=dict()
         node_id=dict()
@@ -60,6 +65,14 @@ class graphview(View):
     @staticmethod
     def adj_list_format(c, g):
         node_list = None
+        if c['Graph'] not in g['types']:
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         allgraphs = g['varr'][g['types'][c['Graph']]]
         for e in allgraphs.keys():
             if allgraphs[e][0] == c['graph']:
@@ -67,7 +80,13 @@ class graphview(View):
                 node_list=g['varr'][nodes_ptr[0]][nodes_ptr[1]][1]
                 break
         if node_list is None:
-            return dict()
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         res, node_id = graphview.get_node_data(c, g, node_list)
         res['edge_list']=[]
         for nodeptr in node_list :
@@ -85,6 +104,14 @@ class graphview(View):
     def edge_list_format(c, g):
         node_list = None
         edge_list = None
+        if c['Graph'] not in g['types']:
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         allgraphs = g['varr'][g['types'][c['Graph']]]
         for e in allgraphs.keys():
             if allgraphs[e][0] == c['graph']:
@@ -94,7 +121,13 @@ class graphview(View):
                 edge_list=g['varr'][edges_ptr[0]][edges_ptr[1]][1]
                 break
         if (node_list is None) or (edge_list is None):
-            return dict()
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         
         res, node_id = graphview.get_node_data(c, g, node_list)
 
@@ -112,6 +145,14 @@ class graphview(View):
     def edge_map_format(c, g):
         node_list = None
         edge_map = None
+        if c['Graph'] not in g['types']:
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         allgraphs = g['varr'][g['types'][c['Graph']]]
         for e in allgraphs.keys():
             if allgraphs[e][0] == c['graph']:
@@ -121,7 +162,13 @@ class graphview(View):
                 edge_map=g['varr'][edgemap_ptr[0]][edgemap_ptr[1]][1]
                 break
         if (node_list is None) or (edge_map is None):
-            return dict()
+            empty_dict={
+                'nodes':[],
+                'Nodedata':dict(),
+                'edge_list':[],
+                'time_stamp':g['time_stamp']
+            }
+            return empty_dict
         
         res, node_id = graphview.get_node_data(c, g, node_list)
 
