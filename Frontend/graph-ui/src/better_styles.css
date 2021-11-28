@@ -7,7 +7,7 @@
 	border-radius: 8px;
 	border-spacing: 10px 10px;
 	font-family: Georgia, "Times New Roman", Times, serif;
-	flex: 30%;
+	flex: 23%;
 	background-color: #f1f1f1;
 	padding: 20px;
 }
@@ -97,6 +97,7 @@
 	border: 1px solid #16a085;
 	border-width: 1px 1px 3px;
 	margin-bottom: 10px;
+	border-radius: 10px;
 }
 .form-style input[type="submit"]:hover,
 .form-style button:hover
@@ -125,3 +126,32 @@
 	margin-bottom: 15px;
 	width: 60%;
 }
+
+.form-style .nodeinfo{
+	margin: 10px;
+	border: 1px solid rgb(54, 54, 54);
+	padding: 10px;
+	border-radius: 8px;
+	overflow-y: scroll;
+	height: 20vh;
+}
+
+.form-style .buttonwrap{
+	display: flex;
+	flex-direction: row;
+}
+
+.form-style .buttonbox{
+	flex: 50%;
+	padding: 5px;
+}
+
+.form-style .section{
+	margin-bottom: 10px;
+}
+
+.form-style .graph:hover
+{
+	text-decoration: underline;
+}
+
