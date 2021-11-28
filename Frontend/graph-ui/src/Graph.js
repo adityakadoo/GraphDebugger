@@ -24,7 +24,7 @@ var labels = [];
 var searchdata = {
 }
 var searchdata1 = {}
-var high_color = "#FF7F7F";
+var high_color = "#f88e97";
 
 
 function randomColor() {
@@ -158,7 +158,7 @@ function disp_data(Object, data, nodes) {
   console.log(nodes.length == 1)
   if (nodes.length != 1) {
     //console.log("skk")
-    tempdata = { "Selct Node": "" }
+    tempdata = { "Select Node": "*" }
     return tempdata;
   }
   //console.log("heer");
@@ -247,7 +247,7 @@ const MyGraph = () => {
             }
           }
         }
-        Mynode[i].color = '#ADD8E6';
+        Mynode[i].color = '#6ae6cd';
         if (found) {
           Mynode[i].color = high_color;
         }
@@ -300,7 +300,7 @@ const MyGraph = () => {
             }
           }
         }
-        Mynode[i].color = '#ADD8E6';
+        Mynode[i].color = '#6ae6cd';
         if (found) {
           Mynode[i].color = high_color;
         }
@@ -323,7 +323,7 @@ const MyGraph = () => {
 
 
   const [state, setState] = useState({
-    nodedata: { "select Node": "" },
+    nodedata: { "Select Node": "*" },
     counter: 5,
     graph: {
       nodes: Mynode,
@@ -377,89 +377,123 @@ const MyGraph = () => {
     <div className="row">
 
       <div className="form-style">
-        <Form2 />
+        <div className="section">
+          <Form2 />
+        </div>
+        <div className="section">
+          <legend><span className="number">2</span> Node Info</legend>
 
-        <legend><span className="number">2</span> Node Info</legend>
+          <div className="nodeinfo">
+            {
+              Object.entries(nodedata)
+                .map(([key, value]) =>
+                  <label>{key}:{value}</label>
+                )
+            }
+          </div>
+        </div>
+        <div className="section">
+          <legend><span className="number">3</span> Clustering</legend>
+          {
+            // Object.entries(clusterNode)
+            // .map( ([key, value]) => 
+            // Object.entries(Mynode)
+            // .map( ([key1,value1]) =>
+            // <h3 >{value} : {key1}</h3> ))
+          }
 
 
-        {
-          Object.entries(nodedata)
-            .map(([key, value]) =>
-              <h3>{key}:{value}</h3>
-            )
-        }
-        <legend><span className="number">3</span> Clustering</legend>
-        {
-          // Object.entries(clusterNode)
-          // .map( ([key, value]) => 
-          // Object.entries(Mynode)
-          // .map( ([key1,value1]) =>
-          // <h3 >{value} : {key1}</h3> ))
-        }
-
-
-
-        <button
-          onClick={(e) => {
-            handleClick1(textInput, e);
-          }}
-        > Create
-        </button>
-
-        <button
-          onClick={(e) => {
-            handleClick2(textInput, e);
-          }}
-        > Destroy
-        </button>
-        {/* <div>
+          <div className="buttonwrap">
+            <div className="buttonbox">
+              <button
+                onClick={(e) => {
+                  handleClick1(textInput, e);
+                }}
+              > Create
+              </button>
+            </div>
+            <div className="buttonbox">
+              <button
+                onClick={(e) => {
+                  handleClick2(textInput, e);
+                }}
+              > Destroy
+              </button>
+            </div>
+          </div>
+          {/* <div>
         <Example />
         </div> */}
 
-        {/* <button 
+          {/* <button 
               onClick={(e)=>{
                 handleclick4(data,e);
               }}>DISPLAY</button>  */}
-        <legend><span className="number">4</span> Labelling</legend>
-        <form>
-          <label className="name">Variable Names</label>
-          <Multiselect
-            isObject={false}
-            id="mselect"
-            onSelect={(event) => (
-              labels = event,
-              createNode1()
-            )}
-            onRemove={(event) => (
-              labels = event,
-              createNode1()
-            )}
-            options={node_feature_list}
-          />
-        </form>
+        </div>
+        <div className="section">
+          <legend><span className="number">4</span> Labelling</legend>
+          <form>
+            {/* <label className="name">Variable Names</label> */}
+            <Multiselect
+              isObject={false}
+              id="mselect"
+              onSelect={(event) => (
+                labels = event,
+                createNode1()
+              )}
+              onRemove={(event) => (
+                labels = event,
+                createNode1()
+              )}
+              options={node_feature_list}
+              placeholder="Variable Names *"
+              style={{
+                chips: {
+                  background: '#1abc9c',
+                },
+                multiselectContainer: {
+                  color: 'black'
+                },
+                searchBox: {
+                  border: 'none',
+                  'border-radius': '5px'
+                },
+                option: {
+                  // 'background-color': '#e8eeef',
+                  // 'color': '#8a97a0'
+                }
+              }}
+              avoidHighlightFirstOption={true}
+              closeOnSelect={false}
+            />
+          </form>
 
 
-        <legend><span className="number">5</span> Highlight Nodes</legend>
-        {/* <label className="name">Variable Name</label> */}
+        </div>
+        <div className="section">
+          <legend><span className="number">5</span> Highlight Nodes</legend>
+          {/* <label className="name">Variable Name</label> */}
 
-        <input type="text" placeholder="Query Variable *" id="txt_1" />
+          <div className="buttonwrap">
+            <div className="buttonbox">
+              <input type="text" placeholder="Query Variable *" id="txt_1" />
+            </div>
+            <div className="buttonbox">
+              <input type="text" placeholder="Query Value *" id="txt_2" />
+            </div>
+          </div>
 
-        {/* <label className="name">Variable Value</label> */}
+          <div className="buttonwrap">
+            <div className="buttonbox">
+              <button onClick={e => { handleadd(data, e) }}>Add</button>
+            </div>
+            <div className="buttonbox">
+              <button onClick={e => { handlerevert(data, e) }}>Revert</button>
+            </div>
+          </div>
 
-        <input type="text" placeholder="Query Value *" id="txt_2" />
-
-
-        <p><button onClick={e => { handleadd(data, e) }}>Add</button></p>
-
-
-        <p><button onClick={e => { handlerevert(data, e) }}>Revert</button></p>
-
-
-        <p><button onClick={e => (handlesubmit(data, e), createNode1())}>Submit</button></p>
-
-
-
-
+          <button onClick={e => (handlesubmit(data, e), createNode1())}>Highlight</button>
+        </div>
       </div>
       <div className="main">
         <Graph graph={graph} options={options} events={events} style={{ height: "100vh" }} />

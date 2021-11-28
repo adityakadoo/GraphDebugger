@@ -79,7 +79,7 @@ class Form2 extends React.Component {
   }
   handleChangeDone(e) {
     let done = this.state.done;
-    done = true;
+    done = !done;
     this.setState({ done });
   }
   handleSubmit(event) {
@@ -111,7 +111,7 @@ class Form2 extends React.Component {
 
       <form onSubmit={this.handleSubmit}>
 
-        <legend onClick={e => this.handleChangeDone(e)}><span className="number">1</span> Graph</legend>
+        <legend onClick={e => this.handleChangeDone(e)}  className="graph"><span className="number">1</span> Graph</legend>
 
         <div>
           {this.state.done && (
