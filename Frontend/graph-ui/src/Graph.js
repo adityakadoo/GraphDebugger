@@ -24,17 +24,17 @@ const api = axios.create({
 //global variables
 var Mynode = [];
 var clusterNode = [];
-
+var cluster_ids=[];
+var Node_groups={}; 
 var count = 1;
-var nodedata = {"Select Node":""};
+//let nodedata;
 let textInput;
 let node_feature_list=[]; 
 var labels = [];
 var searchdata = {
-  "data1": '12'
+  "data1": '8',
   
 }
-var searchdata1 = {}
 var high_color = "#FF7F7F";
 
 
@@ -60,15 +60,14 @@ function clusterbyid(Object){
         }
         return childOptions.cid == count;
     },
-    clusterNodeProperties: {id:'Grp'+String(count),label:'group'+String(count), borderWidth:3, shape:'box',widthConstraint: {
-      minimum:200,
-      maximum:200
-    }}
+    clusterNodeProperties: {id:'Grp'+String(count),label:'group'+String(count), borderWidth:3, shape:'box'}
 
 }
 //console.log(Object);
 Object.cluster(cidoptions);
-//console.log(Object);
+console.log(Object);
+cluster_ids.push('Grp'+String(count));
+clusterNode = [];
 count=count+1;
 }
 
@@ -77,8 +76,15 @@ function destroy(Object){
   if(clusterNode.length==0) return;
   for(var i = 0; i< clusterNode.length;i++){
     if(typeof(clusterNode[i])!='string') continue;
+    for(var j = 0; j<cluster_ids.length ; j++){
+      if(cluster_ids[j]==clusterNode[i]){
+        cluster_ids.splice(j,1);
+      }
+    }
     Object.openCluster(clusterNode[i]);
+    
   }
+  clusterNode = [];
 }
 
 
@@ -92,7 +98,6 @@ function handleClick2(Object,event){
   event.stopPropagation();
   destroy(Object);
 }
-
 
 function handleClick3(data,event){
   event.stopPropagation();
@@ -119,64 +124,60 @@ function handleclick4(data1,event) {
   event.stopPropagation();
   console.log("reaching");
 }
-function handleChangedatan(i,e){
-  console.log("reached")
-  var dictg
-  Object.keys(searchdata1).map(function(key,index){
-    console.log(index)
-    console.log(key)
-    console.log(searchdata1[key])
-    console.log("done")
-  })
-Object.entries(searchdata1).map(function(key,value){
-  console.log(value)
-  console.log(key)
-})
-  searchdata1[i]=e.target.value;
-}
-function handleChangedatat(i,e){
-  searchdata1[searchdata1[i]]=e.target.value;
-}
-function handleadd(data,event){
-  event.stopPropagation();
-  console.log("reached")
-  var x=document.getElementById("txt_1").value;
-  var y=document.getElementById("txt_2").value;
-  searchdata1[x]=y;
-  document.getElementById("txt_1").value="";
-  console.log(x)
-  document.getElementById("txt_2").value="";
-  console.log(y)
-  console.log(searchdata1);
-}
-function handlerevert(data,event){
-  event.stopPropagation();
-  searchdata1={};
-}
-function handlesubmit(data,event){
-  event.stopPropagation();
-  searchdata=searchdata1;
-  searchdata1={};
-}
+
 
 function disp_data(Object,data,nodes){
-  var selectdata={};
+  var tempdata={};
   console.log(nodes.length == 1)
   if(nodes.length !=1 ){
-    console.log("skk")
-    return selectdata;
+    //console.log("skk")
+    tempdata = {"Selct Node":""}
+    return tempdata;
   }
-  console.log("heer");
+  //console.log("heer");
   if(typeof(nodes[0])=='string'){
-    selectdata=Object.getNodesInCluster(nodes[0]);
-    console.log(selectdata);
+    var temparray = Object.getNodesInCluster(nodes[0]);
+    
+    var grp_nodes = "";
+    var grp_groups = "";
+    for(var i =0; i<2;i++){
+      console.log(temparray['length'],i);
+      if(typeof(temparray[i])=='string'){
+        
+        grp_groups += temparray[i]+"\n";
+      }
+      else{
+        console.log("here")
+        grp_nodes+= 'Node:'+temparray[i]+"\n";
+      }
+    }
+    tempdata = {
+      "Nodes":grp_nodes,
+      "Groups":grp_groups
+    };
+    return tempdata;
     //return(Object.getNodesInCluster(nodes[0]));
   }
   else{
-    console.log(data.Nodedata[nodes[0]]);
-    return(data.Nodedata[nodes[0]]);
+    
+    tempdata = data.Nodedata[nodes[0]];
+    console.log(tempdata);
+    return tempdata;
   }
 }
+
+// function getdisp(){
+//   if( typeof(nodedata) == 'undefined') nodedata = {"Select":"data"};
+//   return(
+//     <ul>
+//      { Object.entries(nodedata)
+//         .map( ([key, value]) => 
+//         <h3 >{key} : {value}</h3> )
+//      }
+//     </ul>
+//   )
+// }
+
 
 //options for the graph
 const options = {
@@ -291,9 +292,9 @@ const options = {
       }
     },
     selectionWidth: 1,
-    selfReferenceSize: 20,
+    //selfReferenceSize: 20,
     selfReference:{
-        size: 20,
+        size: 0,
         angle: Math.PI / 4,
         renderBehindTheNode: true
     },
@@ -318,17 +319,17 @@ const options = {
   nodes:{
     shape:'box',
   },
-
+  height: "500px"
 };
 
 
 
 const MyGraph = () => {
   
-  let data
+  let data;
   //var Mynode  = [];
   var MyEdge = [];
-  
+  //let nodedata;
   axios.get('http://localhost:8000/gdb/graph/')
       .then((res)=>{
         data=res.data
@@ -337,30 +338,65 @@ const MyGraph = () => {
         if(Object.keys(data.Nodedata[1])){
           Object.entries(data.Nodedata[1]).map(([key1,value1]) =>node_feature_list.push(key1))
         } 
+
         Mynode  = data.nodes;
         MyEdge = data.edge_list;
+        //nodedata = data.Nodedata;
       });
 
+  
+  const disp_node = (Object,nodes) => {
     
-  const createNode = () => {
+    setState(({ nodedata,...rest }) => {
+      var temp_data = disp_data(Object,data,nodes);
+      return{
+        nodedata:temp_data,
+        ...rest
+      }
+
+      
+    }
+    )
+  }    
+
+  const createNode = (Object1) => {
     axios.get( 'http://localhost:8000/gdb/graph/')
       .then((res)=>{
         data=res.data
-        console.log(data.Nodedata);
+        //console.log(data.Nodedata);
       });
-
+      //console.log(Object1);
     const color = randomColor();
     setState(({ graph: { nodes, edges }, counter, ...rest }) => {
-     
-     
+      for(var k =0;k<cluster_ids.length;k++){
+        Object1.openCluster(cluster_ids[k]);
+      }
+      cluster_ids = [];
       Mynode  = data.nodes;
       MyEdge = data.edge_list;
+      // for(var i = 0; i<Mynode.length ;i++){
+        
+      //   var temp_nodes = Object1.findNode(Mynode[i].id);
+      //   for(var j = 0; j<MyEdge.length ;j++){
+      //     if(Mynode[i].id== MyEdge[j].to){
+      //       MyEdge[j].to = temp_nodes[0];
+      //     }
+      //     if(Mynode[i].id== MyEdge[j].from){
+      //       MyEdge[j].from = temp_nodes[0];
+      //     }
+      //   }
+      // }
+      //nodedata = JSON.stringify(data.Nodedata);
       for(var i =0;i<Mynode.length;i++){
         var labelstr = '';
-        labelstr += "Node :" +Mynode[i].id + '\n';
+
+          labelstr += Mynode[i].label + "\n";
+
+        
         for(var j=0;j<labels.length;j++){
-          labelstr += labels[j]+ ":" +  data.Nodedata[Mynode[i].id][labels[j]] + '\n';  
-        }
+          labelstr += labels[j]+ ":" +  data.Nodedata[Mynode[i].id][labels[j]] + "\n";  
+        
+      } 
         var found = true;
         if(searchdata.length == 0) found = false;
         if(found){
@@ -371,7 +407,6 @@ const MyGraph = () => {
           }
         }
         }
-        Mynode[i].color='#ADD8E6';
         if(found){
           Mynode[i].color = high_color;
         }
@@ -394,7 +429,7 @@ const MyGraph = () => {
 
 
   const [state, setState] = useState({
-    
+    nodedata:{"select Node":""},
     counter: 5,
     graph: {
        nodes:Mynode, 
@@ -406,26 +441,29 @@ const MyGraph = () => {
         //console.log("Selected nodes:");
         //console.log(nodes);
         //console.log(nodedata[1]['data1']);
+        //disp_data(this,data,nodes);
         
-        nodedata = data.Nodedata[nodes];  
-        if(typeof nodedata == 'undefined'){
-          nodedata = {"No DATA":""};
-        }
+        //if(typeof(nodedata) == 'undefined'){
+        //  nodedata = {"No DATA":""};
+        //}
+       
 
       },
       click: ({ pointer: { canvas } }) => {
         
-        nodedata = {"Select Node":""};
+        //nodedata = {"Select Node":""};
         
       },
       select: function(event) {
         var { nodes, edges } = event;
-        disp_data(this,data,nodes);
+        disp_node(this,nodes);
+        //disp_data(this,data,nodes);
         clusterNode = nodes;
         textInput=this;
       },
       doubleClick:function(){
-        createNode();
+        createNode(this);
+        //console.log(this);
         //textInput=this;
         //textInput.current.focus();
         
@@ -436,7 +474,7 @@ const MyGraph = () => {
        }
     }
   })
-  const { graph, events} = state;
+  const { graph, events,nodedata} = state;
   
   let [graphKey, setGraphKey] = useState(uuidv4);
   
@@ -454,26 +492,34 @@ const MyGraph = () => {
         
         
         {
-        //data
-            
-
-
-
-        Object.entries(nodedata)
-        .map( ([key, value]) => 
-        <h3 >{key} : {value}</h3> )
-        
-        } 
-        <legend><span className="number">3</span> Clustering</legend>
-        {
-          // Object.entries(clusterNode)
-          // .map( ([key, value]) => 
-          // Object.entries(Mynode)
-          // .map( ([key1,value1]) =>
-          // <h3 >{value} : {key1}</h3> ))
+          Object.entries(nodedata)
+          .map(([key,value])=>
+          <h3>{key}:{value}</h3>
+          )
         }
+        
 
+        
+        
+        
+        
+         
+        <label> Create Group </label>
+        {
+        //   Object.entries(clusterNode)
+        //   .map( ([key, value]) => 
+        //   Object.entries(Mynode)
+        //   .map( ([key1,value1]) =>
+        //   <h3 >{value} : {key1}</h3> ))
+       }
 
+        <button 
+          onClick={(e) => {
+            console.log("3");
+          handleClick3(data,e);
+        }}
+        > Test
+        </button>
 
         <button 
           onClick={(e) => {
@@ -496,7 +542,6 @@ const MyGraph = () => {
               onClick={(e)=>{
                 handleclick4(data,e);
               }}>DISPLAY</button>  */}
-              <legend><span className="number">4</span> Labelling</legend>
              <form>
                 <label className="name">Variable Names</label>
                 <Multiselect 
@@ -513,32 +558,9 @@ const MyGraph = () => {
                  options={node_feature_list}
                  />
                  </form>
-
-            <form>      
-                 <legend><span className="number">5</span> Highlight Nodes</legend>
-        {/* <label className="name">Variable Name</label> */}
-        
-        <input type="text" placeholder="Query Variable *" id="txt_1" />
-        
-        {/* <label className="name">Variable Value</label> */}
-        
-        <input type="text" placeholder="Query Value *" id="txt_2" />
-     
-        
-        <p><button   onClick={e=>{handleadd(data,e)}}>Add</button></p>
-       
-        
-        <p><button   onClick={e=>{handlerevert(data,e)}}>Revert</button></p>
-       
-        
-        <p><button   onClick={e=>(handlesubmit(data,e),createNode())}>Submit</button></p>
-        
-        </form>
-
-
                  </div>
                  <div className="main"> 
-     <Graph graph={graph} options={options} events={events} style={{ height: "100vh" }} />
+     <Graph graph={graph} options={options} events={events} style={{ height: "100%" }} />
 
 
      </div> 
